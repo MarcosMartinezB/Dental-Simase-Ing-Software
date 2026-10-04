@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clínica Dental Simase | Iniciar sesión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--verde:#2f9e8f;--hondo:#17574f;--menta:#e6f4f0;--fondo:#f4faf8;--tinta:#12302c;--suave:#4a6762;--borde:#cfe5df;--ambar:#f2b84b}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Nunito Sans",system-ui,"Segoe UI",sans-serif;color:var(--tinta);background:var(--fondo);line-height:1.55}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.15;margin:0}
+a{color:var(--hondo)}
+:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+
+/* Encabezado */
+.barra{background:#fff;border-bottom:1px solid var(--borde)}
+.barra div{max-width:1120px;margin:auto;padding:14px 24px;display:flex;align-items:center;gap:12px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--verde);display:grid;place-items:center}
+.logo svg{width:26px;height:26px;fill:#fff}
+.marca{font-family:Fraunces,Georgia,serif;font-size:1.35rem;font-weight:600;color:var(--hondo)}
+.marca small{display:block;font-family:"Nunito Sans",sans-serif;font-size:.8rem;font-weight:400;color:var(--suave)}
+
+/* Portada */
+.portada{max-width:1120px;margin:36px auto 0;padding:0 24px;display:grid;grid-template-columns:1.3fr .9fr;gap:32px;align-items:start}
+
+/* Carrusel */
+.carrusel{position:relative;border-radius:22px;overflow:hidden;background:var(--hondo);color:#fff}
+.pista{display:flex;transition:transform .6s ease}
+.diapo{min-width:100%;min-height:470px;padding:40px 40px 88px;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.d1{background:#17574f}.d2{background:#1c6a5f}.d3{background:#217a6d}
+.diapo svg.ilustracion{width:150px;height:150px}
+.diapo h2{font-size:2rem;max-width:18ch}
+.diapo p{margin:0;max-width:44ch;color:#e3f3ee;font-size:1.05rem}
+.mandos{position:absolute;left:40px;right:40px;bottom:28px;display:flex;align-items:center;justify-content:space-between}
+.puntos{display:flex;gap:10px}
+.puntos button{width:12px;height:12px;padding:0;border-radius:50%;border:2px solid #fff;background:transparent;cursor:pointer}
+.puntos button[aria-current="true"]{background:var(--ambar);border-color:var(--ambar)}
+.flechas{display:flex;gap:8px}
+.flechas button{width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:1.4rem;line-height:1;cursor:pointer}
+.flechas button:hover{background:rgba(255,255,255,.3)}
+
+/* Acceso */
+.tarjeta{background:#fff;border:1px solid var(--borde);border-radius:18px;padding:30px}
+.tarjeta h1{font-size:1.7rem;color:var(--hondo)}
+.tarjeta .sub{margin:6px 0 22px;color:var(--suave)}
+label{display:block;font-weight:700;margin:0 0 6px}
+.campo{margin-bottom:18px}
+.campo input{width:100%;padding:12px 14px;font:inherit;border:1.5px solid var(--borde);border-radius:10px;background:#fff;color:var(--tinta)}
+.campo input:focus{border-color:var(--verde);outline:none;box-shadow:0 0 0 3px rgba(47,158,143,.25)}
+.ayuda{display:block;margin-top:5px;font-size:.85rem;color:var(--suave)}
+.error{background:#fdeceb;border:1px solid #e9a7a1;color:#7a1f17;border-radius:10px;padding:10px 14px;margin-bottom:18px}
+.entrar{width:100%;padding:13px;border:0;border-radius:10px;background:var(--hondo);color:#fff;font:inherit;font-weight:700;font-size:1.05rem;cursor:pointer}
+.entrar:hover{background:#1c6a5f}
+.sin-cuenta{margin-top:18px;border:1.5px dashed var(--verde);background:var(--menta);border-radius:16px;padding:18px 22px}
+.sin-cuenta h2{font-size:1.15rem;color:var(--hondo);margin-bottom:6px}
+.sin-cuenta p{margin:0 0 10px;color:var(--suave);font-size:.95rem}
+.sin-cuenta a{font-weight:700}
+
+/* Footer */
+footer{background:var(--hondo);color:#e3f3ee;margin-top:72px;position:relative}
+footer::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px;background:radial-gradient(circle at 16px 14px,var(--hondo) 15px,transparent 16px) repeat-x;background-size:32px 14px}
+.pie{max-width:1120px;margin:auto;padding:44px 24px 20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:32px}
+.pie h3{font-size:1.05rem;color:#fff;margin-bottom:10px}
+.pie p,.pie li{margin:0 0 6px;font-size:.95rem}
+.pie ul{list-style:none;margin:0;padding:0}
+.pie a{color:#bfe3da}
+.urgencia{max-width:1120px;margin:0 auto;padding:0 24px}
+.urgencia p{margin:0;padding:14px 18px;border:1px solid rgba(255,255,255,.25);border-radius:12px;font-size:.95rem}
+.legal{max-width:1120px;margin:auto;padding:18px 24px 28px;font-size:.85rem;color:#a9d3c8}
+
+@media (max-width:860px){
+  .portada{grid-template-columns:1fr}
+  .acceso{order:-1}
+  .diapo{padding:28px 24px 84px;min-height:430px}
+  .mandos{left:24px;right:24px}
+}
+@media (prefers-reduced-motion:reduce){.pista{transition:none}}
+</style>
+</head>
+<body>
+
+<!-- Dibujo del diente, definido una vez y reutilizado -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="diente" viewBox="0 0 120 120">
+    <path d="M60 32C56 22 44 18 34 24C22 31 22 48 28 62C33 74 33 92 38 100C42 106 48 104 51 96C54 88 56 80 60 80C64 80 66 88 69 96C72 104 78 106 82 100C87 92 87 74 92 62C98 48 98 31 86 24C76 18 64 22 60 32Z"/>
+  </symbol>
+</svg>
+
+<header class="barra">
+  <div>
+    <span class="logo" aria-hidden="true"><svg><use href="#diente"/></svg></span>
+    <span class="marca">Dental Simase<small>Clínica dental</small></span>
+  </div>
+</header>
+
+<main class="portada">
+
+  <section class="carrusel" role="region" aria-roledescription="carrusel" aria-label="Qué puedes hacer en Dental Simase">
+    <div class="pista">
+      <article class="diapo d1">
+        <svg class="ilustracion" viewBox="0 0 150 150" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="20" y="30" width="110" height="100" rx="14"/>
+          <path d="M20 62h110M50 18v24M100 18v24"/>
+          <path d="M48 96l16 16 38-38" stroke="#f2b84b"/>
+        </svg>
+        <h2>Reserva tu hora con tu odontólogo</h2>
+        <p>Elige el día y el horario disponible. Si necesitas cambiarlo, puedes cancelar tu cita desde tu cuenta.</p>
+      </article>
+      <article class="diapo d2" aria-hidden="true">
+        <svg class="ilustracion" viewBox="0 0 150 150" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="32" y="22" width="86" height="112" rx="12"/>
+          <rect x="56" y="12" width="38" height="18" rx="6" fill="#1c6a5f"/>
+          <path d="M50 62h50M50 82h50M50 102h30"/>
+        </svg>
+        <h2>Tu ficha clínica, ordenada</h2>
+        <p>Cada atención, diagnóstico y tratamiento queda registrado en tu ficha para que tu odontólogo continúe donde quedó.</p>
+      </article>
+      <article class="diapo d3" aria-hidden="true">
+        <svg class="ilustracion" viewBox="0 0 150 150" aria-hidden="true">
+          <use href="#diente" x="15" y="15" width="120" height="120" fill="#fff"/>
+          <path d="M112 28v20M102 38h20" stroke="#f2b84b" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+        <h2>De la consulta al pago, en un solo lugar</h2>
+        <p>Recepción registra tu pago en efectivo o con tarjeta y la clínica lleva el control de sus insumos para atenderte sin esperas.</p>
+      </article>
+    </div>
+    <div class="mandos">
+      <div class="puntos">
+        <button type="button" aria-label="Ir a la diapositiva 1" aria-current="true"></button>
+        <button type="button" aria-label="Ir a la diapositiva 2" aria-current="false"></button>
+        <button type="button" aria-label="Ir a la diapositiva 3" aria-current="false"></button>
+      </div>
+      <div class="flechas">
+        <button type="button" class="ant" aria-label="Diapositiva anterior">&#8249;</button>
+        <button type="button" class="sig" aria-label="Diapositiva siguiente">&#8250;</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="acceso">
+    <div class="tarjeta">
+      <h1>Iniciar sesión</h1>
+      <p class="sub">Ingresa con el usuario que te entregó la clínica.</p>
+
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+        {% if form.errors %}
+        <div class="error" role="alert">Usuario o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.</div>
+        {% endif %}
+
+        <div class="campo">
+          <label for="id_username">Usuario</label>
+          <input type="text" name="username" id="id_username" autocomplete="username"
+                 autocapitalize="off" spellcheck="false" required autofocus
+                 value="{{ form.username.value|default_if_none:'' }}">
+          <span class="ayuda">Si eres paciente, tu usuario es tu RUT.</span>
+        </div>
+
+        <div class="campo">
+          <label for="id_password">Contraseña</label>
+          <input type="password" name="password" id="id_password" autocomplete="current-password"
+                 autocapitalize="off" spellcheck="false" required>
+        </div>
+
+        <button type="submit" class="entrar">Iniciar sesión</button>
+      </form>
+    </div>
+
+    <div class="sin-cuenta">
+      <h2>¿Todavía no tienes usuario?</h2>
+      <p>Tu cuenta la crea el equipo de recepción cuando te registran como paciente, y te entregan una contraseña segura. No necesitas registrarte por tu cuenta.</p>
+      <a href="#contacto">Ver teléfono y horario de recepción</a>
+    </div>
+  </section>
+
+</main>
+
+<footer id="contacto">
+  <div class="pie">
+    <div>
+      <h3>Clínica Dental Simase</h3>
+      <p>Cuidamos tu sonrisa con calma, paso a paso y con tu ficha siempre al día.</p>
+    </div>
+    <div>
+      <h3>Horario de atención</h3>
+      <ul><!-- REEMPLAZAR por el horario real de la clínica -->
+        <li>Lunes a viernes: 09:00 a 19:00</li>
+        <li>Sábado: 09:00 a 13:00</li>
+        <li>Domingo y festivos: cerrado</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Contacto</h3>
+      <ul><!-- REEMPLAZAR por los datos reales -->
+        <li>Calle Ejemplo 1234, oficina 5</li>
+        <li><a href="tel:+56900000000">+56 9 0000 0000</a></li>
+        <li><a href="mailto:contacto@dentalsimase.cl">contacto@dentalsimase.cl</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="urgencia">
+    <p>Dolor fuerte, golpe o un diente que se soltó: llámanos y te orientamos sobre qué hacer mientras llegas.</p>
+  </div>
+  <div class="legal">&copy; {% now "Y" %} Clínica Dental Simase. Proyecto académico de Ingeniería de Software.</div>
+</footer>
+
+<script>
+(function () {
+  var c = document.querySelector('.carrusel');
+  var pista = c.querySelector('.pista');
+  var diapos = Array.prototype.slice.call(pista.children);
+  var puntos = c.querySelectorAll('.puntos button');
+  var i = 0, timer = null;
+
+  function ir(k) {
+    i = (k + diapos.length) % diapos.length;
+    pista.style.transform = 'translateX(-' + (i * 100) + '%)';
+    diapos.forEach(function (d, j) { d.setAttribute('aria-hidden', j === i ? 'false' : 'true'); });
+    puntos.forEach(function (p, j) { p.setAttribute('aria-current', j === i ? 'true' : 'false'); });
+  }
+  function iniciar() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    detener();
+    timer = setInterval(function () { ir(i + 1); }, 6000);
+  }
+  function detener() { if (timer) { clearInterval(timer); timer = null; } }
+
+  puntos.forEach(function (p, j) { p.addEventListener('click', function () { ir(j); }); });
+  c.querySelector('.ant').addEventListener('click', function () { ir(i - 1); });
+  c.querySelector('.sig').addEventListener('click', function () { ir(i + 1); });
+  c.addEventListener('mouseenter', detener);
+  c.addEventListener('mouseleave', iniciar);
+  c.addEventListener('focusin', detener);
+  c.addEventListener('focusout', iniciar);
+  iniciar();
+})();
+</script>
+</body>
+</html>

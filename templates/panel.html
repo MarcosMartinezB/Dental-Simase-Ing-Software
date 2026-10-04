@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Inicio{% endblock %}
+
+{% block contenido %}
+<h1>Hola, {{ user.get_full_name|default:user.username }}</h1>
+<div class="tarjeta">
+  <p>Tu rol es <span class="insignia">{{ user.get_rol_display }}</span>.</p>
+  <p>Usa el menú de la izquierda para ver las opciones de tu rol. Las pantallas se irán sumando a medida que se construyan.</p>
+</div>
+{% endblock %}

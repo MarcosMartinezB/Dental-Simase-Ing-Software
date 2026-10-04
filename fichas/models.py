@@ -1,83 +1,101 @@
+from decimal import Decimal
+
+from django.core.exceptions import ValidationError
 from django.db import models
-
-from django.db import models
-from usuarios.validators import validar_rut_chileno
-from usuarios.base import SoftDeleteModel
-
-class Paciente(SoftDeleteModel):
-    SEXO_CHOICES = [
-        ('M', 'Masculino'),
-        ('F', 'Femenino'),
-        ('O', 'Otro'),
-    ]
-
-    rut = models.CharField(
-        max_length=12,
-        unique=True,
-        validators=[validar_rut_chileno],
-        verbose_name="RUT Chileno"
-    )
-    nombres = models.CharField(max_length=100, verbose_name="Nombres")
-    apellidos = models.CharField(max_length=100, verbose_name="Apellidos")
-    fecha_nacimiento = models.DateField(verbose_name="Fecha de Nacimiento")
-    sexo = models.CharField(max_length=1, choices=SEXO_CHOICES, verbose_name="Sexo")
-    telefono = models.CharField(max_length=15, verbose_name="Teléfono de Contacto")
-    email = models.EmailField(blank=True, null=True, verbose_name="Correo Electrónico")
-    direccion = models.CharField(max_length=200, blank=True, null=True, verbose_name="Dirección de Domicilio")
-
-    class Meta:
-        verbose_name = "Paciente"
-        verbose_name_plural = "Pacientes"
-        ordering = ['apellidos', 'nombres']
-
-    def __str__(self):
-        return f"{self.nombres} {self.apellidos} ({self.rut})"
+from django.db.models import Sum
 
 
-class AntecedenteMedico(SoftDeleteModel):
-    """
-    Anamnesis del paciente: Registro de condiciones médicas relevantes
-    antes o durante la atención odontológica.
-    """
+class FichaClinica(models.Model):
     paciente = models.OneToOneField(
-        Paciente,
-        on_delete=models.CASCADE,
-        related_name='antecedentes_medicos',
-        verbose_name="Paciente"
+        'usuarios.Paciente', on_delete=models.PROTECT, related_name='ficha_clinica'
     )
-    alergias = models.TextField(blank=True, null=True, verbose_name="Alergias Conocidas (Fármacos/Latex)")
-    enfermedades_cronicas = models.TextField(blank=True, null=True, verbose_name="Enfermedades Crónicas (Diabetes, Hipertensión, etc.)")
-    medicamentos_actuales = models.TextField(blank=True, null=True, verbose_name="Medicamentos en Uso")
-    fuma = models.BooleanField(default=False, verbose_name="¿Es Fumador?")
-    embarazada = models.BooleanField(default=False, verbose_name="¿Está Embarazada?")
-    observaciones = models.TextField(blank=True, null=True, verbose_name="Observaciones Adicionales")
+    fecha_creacion = models.DateField(auto_now_add=True)
+    antecedentes_medicos = models.TextField(blank=True)
 
     class Meta:
-        verbose_name = "Antecedente Médico"
-        verbose_name_plural = "Antecedentes Médicos"
+        verbose_name = "Ficha clínica"
+        verbose_name_plural = "Fichas clínicas"
+
+    def actualizar_antecedentes(self, texto):
+        self.antecedentes_medicos = texto
+        self.save(update_fields=['antecedentes_medicos'])
 
     def __str__(self):
-        return f"Anamnesis de {self.paciente.nombres} {self.paciente.apellidos}"
+        return f"Ficha de {self.paciente}"
 
 
-class FichaClinica(SoftDeleteModel):
-    """
-    Ficha Clínica Odontológica: Contenedor general del historial médico.
-    Garantiza la trazabilidad exigida por la regulación de salud.
-    """
-    numero_ficha = models.CharField(max_length=20, unique=True, verbose_name="Número de Ficha")
-    paciente = models.OneToOneField(
-        Paciente,
-        on_delete=models.PROTECT,
-        related_name='ficha_clinica',
-        verbose_name="Paciente"
+class Atencion(models.Model):
+    ficha = models.ForeignKey(
+        FichaClinica, on_delete=models.PROTECT, related_name='atenciones'
     )
-    fecha_apertura = models.DateField(auto_now_add=True, verbose_name="Fecha de Apertura")
-    observaciones_generales = models.TextField(blank=True, null=True, verbose_name="Observaciones Generales")
+    cita = models.OneToOneField(
+        'citas.Cita', on_delete=models.PROTECT, related_name='atencion'
+    )
+    fecha_hora = models.DateTimeField()
+    diagnostico = models.TextField(blank=True)
 
     class Meta:
-        verbose_name = "Ficha Clínica"
-        verbose_name_plural = "Fichas Clínicas"
+        verbose_name = "Atención"
+        verbose_name_plural = "Atenciones"
+        ordering = ['-fecha_hora']
+
+    def clean(self):
+        # La atención debe quedar en la ficha del mismo paciente de la cita.
+        if self.ficha_id and self.cita_id:
+            if self.ficha.paciente_id != self.cita.paciente_id:
+                raise ValidationError(
+                    'La ficha clínica no corresponde al paciente de la cita.'
+                )
+
+    def registrar_diagnostico(self, texto):
+        self.diagnostico = texto
+        self.save(update_fields=['diagnostico'])
+
+    def registrar_insumo(self, insumo, cantidad):
+        """Registra la salida de un insumo asociada a esta atención."""
+        from inventario.models import MovimientoInventario
+
+        movimiento = MovimientoInventario(
+            insumo=insumo,
+            tipo='SALIDA',
+            cantidad=cantidad,
+            usuario=self.cita.odontologo.usuario,
+            atencion=self,
+        )
+        movimiento.registrar()
+        return movimiento
 
     def __str__(self):
-        return f"Ficha N°{self.numero_ficha} - {self.paciente}"
+        return f"Atención {self.fecha_hora:%d/%m/%Y %H:%M} - {self.ficha.paciente}"
+
+
+class Tratamiento(models.Model):
+    atencion = models.ForeignKey(
+        Atencion, on_delete=models.CASCADE, related_name='tratamientos'
+    )
+    nombre = models.CharField(max_length=100)
+    costo = models.DecimalField(max_digits=10, decimal_places=2)
+    estado = models.CharField(max_length=20)
+
+    def calcular_costo(self):
+        return self.costo
+
+    def __str__(self):
+        return self.nombre
+
+
+class Presupuesto(models.Model):
+    atencion = models.OneToOneField(
+        Atencion, on_delete=models.CASCADE, related_name='presupuesto'
+    )
+    fecha_emision = models.DateField(auto_now_add=True)
+    monto_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def calcular_total(self):
+        total = self.atencion.tratamientos.aggregate(t=Sum('costo'))['t'] or Decimal('0')
+        self.monto_total = total
+        self.save(update_fields=['monto_total'])
+        return total
+
+    def __str__(self):
+        return f"Presupuesto {self.pk} - {self.atencion}"

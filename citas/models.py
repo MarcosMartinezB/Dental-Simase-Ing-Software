@@ -1,33 +1,58 @@
+from django.core.exceptions import ValidationError
 from django.db import models
-from usuarios.models import Usuario
-from fichas.models import Paciente
-from usuarios.base import SoftDeleteModel
+from django.utils import timezone
 
-class CitaMedica(SoftDeleteModel):
-    ESTADO_CHOICES = [
-        ('RESERVADA', 'Reservada'),
-        ('CONFIRMADA', 'Confirmada'),
-        ('EN_ATENCION', 'En Atención'),
-        ('COMPLETADA', 'Completada'),
-        ('CANCELADA', 'Cancelada'),
-    ]
 
-    paciente = models.ForeignKey(Paciente, on_delete=models.PROTECT, related_name='citas', verbose_name="Paciente")
-    odontologo = models.ForeignKey(
-        Usuario, 
-        on_delete=models.PROTECT, 
-        limit_choices_to={'rol__nombre': 'Odontologo'}, 
-        related_name='citas_asignadas',
-        verbose_name="Odontólogo"
+class EstadoCita(models.TextChoices):
+    RESERVADA = 'RESERVADA', 'Reservada'
+    CONFIRMADA = 'CONFIRMADA', 'Confirmada'
+    EN_ATENCION = 'EN_ATENCION', 'En atención'
+    COMPLETADA = 'COMPLETADA', 'Completada'
+    CANCELADA = 'CANCELADA', 'Cancelada'
+
+
+class Cita(models.Model):
+    paciente = models.ForeignKey(
+        'usuarios.Paciente', on_delete=models.PROTECT, related_name='citas'
     )
-    fecha_hora = models.DateTimeField(verbose_name="Fecha y Hora de la Cita")
-    motivo_consulta = models.TextField(verbose_name="Motivo de Consulta")
-    estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='RESERVADA', verbose_name="Estado de Cita")
+    odontologo = models.ForeignKey(
+        'usuarios.Odontologo', on_delete=models.PROTECT, related_name='citas'
+    )
+    fecha_hora = models.DateTimeField()
+    estado = models.CharField(
+        max_length=20, choices=EstadoCita.choices, default=EstadoCita.RESERVADA
+    )
 
     class Meta:
-        verbose_name = "Cita Médica"
-        verbose_name_plural = "Citas Médicas"
         ordering = ['fecha_hora']
 
+    def clean(self):
+        # Verificar disponibilidad: el odontólogo no puede tener dos citas
+        # vigentes a la misma hora.
+        if self.estado != EstadoCita.CANCELADA and self.odontologo_id and self.fecha_hora:
+            choque = (
+                Cita.objects
+                .filter(odontologo_id=self.odontologo_id, fecha_hora=self.fecha_hora)
+                .exclude(estado=EstadoCita.CANCELADA)
+                .exclude(pk=self.pk)
+                .exists()
+            )
+            if choque:
+                raise ValidationError('El odontólogo ya tiene una cita en ese horario.')
+            if self._state.adding and self.fecha_hora < timezone.now():
+                raise ValidationError('No se puede reservar una cita en el pasado.')
+
+    def confirmar(self):
+        if self.estado != EstadoCita.RESERVADA:
+            raise ValidationError('Solo se puede confirmar una cita reservada.')
+        self.estado = EstadoCita.CONFIRMADA
+        self.save(update_fields=['estado'])
+
+    def cancelar(self):
+        if self.estado in (EstadoCita.COMPLETADA, EstadoCita.CANCELADA):
+            raise ValidationError('Esta cita ya no se puede cancelar.')
+        self.estado = EstadoCita.CANCELADA
+        self.save(update_fields=['estado'])
+
     def __str__(self):
-        return f"Cita: {self.paciente} con Dr(a). {self.odontologo.last_name} ({self.fecha_hora.strftime('%d/%m/%Y %H:%M')})"
+        return f"{self.fecha_hora:%d/%m/%Y %H:%M} - {self.paciente} con {self.odontologo}"
