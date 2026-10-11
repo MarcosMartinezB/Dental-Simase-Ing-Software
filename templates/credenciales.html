@@ -1,0 +1,20 @@
+{# Contexto: titulo (opc.), usuario, clave (temporal), url_volver. Renderizar directo tras el POST, sin redirigir. #}
+{% extends 'base.html' %}
+{% block titulo %}Credenciales{% endblock %}
+{% block contenido %}
+<h1>{{ titulo|default:"Usuario creado" }}</h1>
+<div class="tarjeta">
+  <div class="aviso aviso-warning">Entrega estos datos ahora. La contraseña no se vuelve a mostrar y no se guarda en texto plano.</div>
+  <p>Usuario: <strong>{{ usuario }}</strong></p>
+  <p>Contraseña temporal: <strong id="clave" style="font-family:monospace;font-size:1.2rem">{{ clave }}</strong>
+     <button type="button" class="boton-sec" id="copiar" style="margin-left:10px">Copiar</button></p>
+  <a class="boton" href="{{ url_volver }}">Listo</a>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('copiar').addEventListener('click', function () {
+  navigator.clipboard.writeText(document.getElementById('clave').textContent);
+});
+</script>
+{% endblock %}

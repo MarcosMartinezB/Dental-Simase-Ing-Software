@@ -92,12 +92,13 @@ class Paciente(models.Model):
             self.rut = normalizar_rut(self.rut)
         super().save(*args, **kwargs)
 
-    def reservar_cita(self, fecha_hora, odontologo):
-        from citas.models import Cita
-        cita = Cita(paciente=self, odontologo=odontologo, fecha_hora=fecha_hora)
-        cita.full_clean()
-        cita.save()
-        return cita
+    def reservar_cita(self, fecha_hora, odontologo, tipo_atencion):
+       from citas.models import Cita
+       cita = Cita(paciente=self, odontologo=odontologo,
+                   tipo_atencion=tipo_atencion, fecha_hora=fecha_hora)
+       cita.full_clean()
+       cita.save()
+       return cita
 
     def consultar_mis_citas(self):
         return self.citas.all()

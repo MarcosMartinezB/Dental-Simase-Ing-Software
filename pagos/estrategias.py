@@ -4,9 +4,14 @@ from decimal import Decimal
 from .models import EstadoPago, MedioPago, ResultadoPOS
 
 
+def _clp(valor):
+    return '$' + f'{Decimal(valor):,.0f}'.replace(',', '.')
+
+
 class EstrategiaPago(ABC):
-    """Interfaz Strategy."""
+    """Interfaz Strategy. Si rechaza, deja el motivo en `self.motivo`."""
     medio = None
+    motivo = ''
 
     @abstractmethod
     def procesar_pago(self, monto):
@@ -25,8 +30,11 @@ class PagoEfectivo(EstrategiaPago):
 
     def procesar_pago(self, monto):
         if self.monto_recibido >= monto:
+            self.motivo = ''
             return EstadoPago.APROBADO
-        return EstadoPago.RECHAZADO  # el efectivo no alcanza
+        self.motivo = (f'El monto recibido ({_clp(self.monto_recibido)}) '
+                       f'no cubre el total ({_clp(monto)}).')
+        return EstadoPago.RECHAZADO
 
     def calcular_vuelto(self, monto):
         return max(self.monto_recibido - monto, Decimal('0'))
@@ -45,9 +53,14 @@ class PagoTarjetaPresencial(EstrategiaPago):
 
     def procesar_pago(self, monto):
         # No se hace un segundo cobro ni hay conexión con el terminal.
-        if self.referencia_pos and self.resultado_pos == ResultadoPOS.APROBADO:
-            return EstadoPago.APROBADO
-        return EstadoPago.RECHAZADO
+        if not self.referencia_pos:
+            self.motivo = 'Falta la referencia entregada por el POS.'
+            return EstadoPago.RECHAZADO
+        if self.resultado_pos != ResultadoPOS.APROBADO:
+            self.motivo = 'El POS informó que la operación fue rechazada.'
+            return EstadoPago.RECHAZADO
+        self.motivo = ''
+        return EstadoPago.APROBADO
 
     def datos(self):
         return {'referencia_pos': self.referencia_pos,

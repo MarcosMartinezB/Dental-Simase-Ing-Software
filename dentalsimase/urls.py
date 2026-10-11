@@ -1,14 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from django.urls import path
-
-from usuarios.views import panel
+from django.urls import include, path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', auth_views.LoginView.as_view(
-        template_name='login.html',
-        redirect_authenticated_user=True), name='login'),
-    path('panel/', panel, name='panel'),
+    path('', auth_views.LoginView.as_view(template_name='login.html',
+    redirect_authenticated_user=True), name='login'),
     path('salir/', auth_views.LogoutView.as_view(), name='logout'),
+    path('', include('usuarios.urls')),
+    path('', include('citas.urls')),
+    path('', include('fichas.urls')),
+    path('', include('inventario.urls')),
+    path('', include('pagos.urls')),
+    path('', include('administracion.urls')),
 ]

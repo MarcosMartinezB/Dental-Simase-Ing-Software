@@ -1,0 +1,41 @@
+{# Contexto: cita, monto (calculado, no editable), form con medio, monto_recibido, referencia_pos, resultado_pos #}
+{% extends 'base.html' %}
+{% block titulo %}Registrar pago{% endblock %}
+{% block extra_css %}[hidden]{display:none!important}{% endblock %}
+{% block contenido %}
+<h1>Registrar pago presencial</h1>
+<div class="tarjeta">
+  <p><strong>Paciente:</strong> {{ cita.paciente }}<br>
+     <strong>Cita:</strong> {{ cita.fecha_hora|date:"d/m/Y H:i" }} con {{ cita.odontologo }}</p>
+  <p>Monto a cobrar: <strong style="font-size:1.5rem">${{ monto|floatformat:"0g" }}</strong></p>
+</div>
+<form method="post" class="tarjeta">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="aviso aviso-error" role="alert">{% for e in form.non_field_errors %}{{ e }} {% endfor %}</div>{% endif %}
+  <div class="grid-form">{% include 'partials/_campo.html' with campo=form.medio %}</div>
+  <div class="grid-form" id="g-EFECTIVO" hidden>
+    {% include 'partials/_campo.html' with campo=form.monto_recibido %}
+  </div>
+  <div class="grid-form" id="g-TARJETA_PRESENCIAL" hidden>
+    {% include 'partials/_campo.html' with campo=form.referencia_pos %}
+    {% include 'partials/_campo.html' with campo=form.resultado_pos %}
+  </div>
+  <p style="color:var(--suave);font-size:.9rem">Con tarjeta, el cobro se hace antes en el POS. Aquí solo se registra su referencia y su resultado.</p>
+  <p style="display:flex;gap:10px;margin:16px 0 0">
+    <button class="boton" type="submit">Registrar pago</button>
+    <a class="boton-sec" href="{% url 'agenda_dia' %}">Cancelar</a>
+  </p>
+</form>
+{% endblock %}
+{% block extra_js %}
+<script>
+var medio = document.getElementById('id_medio');
+function mostrar() {
+  ['EFECTIVO', 'TARJETA_PRESENCIAL'].forEach(function (m) {
+    document.getElementById('g-' + m).hidden = (medio.value !== m);
+  });
+}
+medio.addEventListener('change', mostrar);
+mostrar();
+</script>
+{% endblock %}

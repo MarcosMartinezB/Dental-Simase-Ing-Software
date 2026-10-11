@@ -1,13 +1,24 @@
 from django.contrib import admin, messages
 from django.core.exceptions import ValidationError
 
-from .models import Cita
+from .models import Cita, TipoAtencion
+
+
+@admin.register(TipoAtencion)
+class TipoAtencionAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'costo', 'duracion_minutos', 'activo')
+    list_filter = ('activo',)
+    search_fields = ('nombre',)
+
+    def has_delete_permission(self, request, obj=None):
+        return False  # las atenciones se desactivan, no se borran (hay citas que las usan)
 
 
 @admin.register(Cita)
 class CitaAdmin(admin.ModelAdmin):
-    list_display = ('fecha_hora', 'paciente', 'odontologo', 'estado')
-    list_filter = ('estado', 'fecha_hora')
+    list_display = ('fecha_hora', 'fecha_hora_fin', 'paciente', 'odontologo',
+                    'tipo_atencion', 'estado')
+    list_filter = ('estado', 'tipo_atencion', 'fecha_hora')
     search_fields = (
         'paciente__rut',
         'paciente__usuario__first_name',
@@ -15,6 +26,7 @@ class CitaAdmin(admin.ModelAdmin):
         'odontologo__usuario__username',
     )
     ordering = ('fecha_hora',)
+    readonly_fields = ('fecha_hora_fin',)
     actions = ['confirmar_citas', 'cancelar_citas']
 
     @admin.action(description='Confirmar citas seleccionadas')

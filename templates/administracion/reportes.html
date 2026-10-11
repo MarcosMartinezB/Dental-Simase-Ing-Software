@@ -1,0 +1,30 @@
+{# Contexto: desde, hasta (YYYY-MM-DD), resumen (lista de tuplas (etiqueta, valor)) #}
+{% extends 'base.html' %}
+{% block titulo %}Reportes{% endblock %}
+{% block contenido %}
+<h1>Reporte de gestión</h1>
+<form method="get" class="tarjeta">
+  <div class="grid-form">
+    <div class="campo"><label for="desde">Desde</label><input type="date" id="desde" name="desde" value="{{ desde }}"></div>
+    <div class="campo"><label for="hasta">Hasta</label><input type="date" id="hasta" name="hasta" value="{{ hasta }}"></div>
+  </div>
+  <button class="boton" type="submit" style="margin-top:16px">Filtrar</button>
+</form>
+
+<table class="tabla">
+  <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
+  <tbody>
+  {% for etiqueta, valor in resumen %}<tr><td>{{ etiqueta }}</td><td>{{ valor }}</td></tr>
+  {% empty %}<tr><td colspan="2">No hay datos en el rango seleccionado.</td></tr>{% endfor %}
+  </tbody>
+</table>
+
+<p style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+  <a class="boton-sec" href="{% url 'reporte_pdf' %}?desde={{ desde }}&hasta={{ hasta }}">Descargar PDF</a>
+  <form method="post" action="{% url 'reporte_correo' %}">
+    {% csrf_token %}
+    <input type="hidden" name="desde" value="{{ desde }}"><input type="hidden" name="hasta" value="{{ hasta }}">
+    <button class="boton-sec" type="submit">Enviar por correo</button>
+  </form>
+</p>
+{% endblock %}

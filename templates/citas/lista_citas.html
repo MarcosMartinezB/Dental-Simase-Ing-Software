@@ -1,0 +1,40 @@
+{# Contexto: titulo, citas, mostrar_paciente, mostrar_odontologo, puede_cancelar (bool), url_nueva (opc.) #}
+{# Sirve para: agenda del día (recepción), mis citas (paciente), citas del odontólogo #}
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<h1>{{ titulo }}</h1>
+{% if url_nueva %}<p><a class="boton" href="{{ url_nueva }}">Agendar nueva cita</a></p>{% endif %}
+{% if citas %}
+<table class="tabla">
+  <thead><tr>
+    <th>Fecha y hora</th>
+    {% if mostrar_paciente %}<th>Paciente</th>{% endif %}
+    {% if mostrar_odontologo %}<th>Odontólogo</th>{% endif %}
+    <th>Atención</th><th>Duración</th><th>Estado</th><th></th>
+  </tr></thead>
+  <tbody>
+  {% for cita in citas %}
+  <tr>
+    <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
+    {% if mostrar_paciente %}<td>{{ cita.paciente }}</td>{% endif %}
+    {% if mostrar_odontologo %}<td>{{ cita.odontologo }}</td>{% endif %}
+    <td>{{ cita.tipo_atencion.nombre }}</td>
+    <td>{{ cita.tipo_atencion.duracion_minutos }} min</td>
+    <td><span class="insignia">{{ cita.get_estado_display }}</span></td>
+    <td style="display:flex;gap:8px">
+      <a class="boton-sec" href="{% url 'detalle_cita' cita.pk %}">Ver</a>
+      {% if puede_cancelar and cita.estado != 'CANCELADA' and cita.estado != 'COMPLETADA' %}
+      <form method="post" action="{% url 'cancelar_cita' cita.pk %}" onsubmit="return confirm('¿Cancelar esta cita?')">
+        {% csrf_token %}<button class="boton-sec" type="submit">Cancelar</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="tarjeta">No hay citas para mostrar.</div>
+{% endif %}
+{% endblock %}

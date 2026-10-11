@@ -5,7 +5,9 @@ from .models import Atencion, FichaClinica, Presupuesto, Tratamiento
 
 class TratamientoInline(admin.TabularInline):
     model = Tratamiento
-    extra = 0
+    extra = 1
+    fields = ('tipo_atencion', 'nombre', 'costo', 'estado')
+    readonly_fields = ('nombre', 'costo')  # vienen del catálogo, no se digitan
 
 
 @admin.register(FichaClinica)

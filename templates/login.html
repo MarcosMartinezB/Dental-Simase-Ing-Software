@@ -183,30 +183,30 @@ footer::before{content:"";position:absolute;left:0;right:0;top:-14px;height:14px
 <footer id="contacto">
   <div class="pie">
     <div>
-      <h3>Clínica Dental Simase</h3>
-      <p>Cuidamos tu sonrisa con calma, paso a paso y con tu ficha siempre al día.</p>
+      <h3>Nuevos pacientes</h3>
+      <p>Los usuarios nuevos se registran en recepción. El equipo crea tu cuenta (tu usuario es tu RUT) y te entrega una contraseña segura.</p>
+      <p>No existe registro por internet.</p>
     </div>
     <div>
       <h3>Horario de atención</h3>
-      <ul><!-- REEMPLAZAR por el horario real de la clínica -->
-        <li>Lunes a viernes: 09:00 a 19:00</li>
-        <li>Sábado: 09:00 a 13:00</li>
-        <li>Domingo y festivos: cerrado</li>
+      <ul>
+        <li>{{ clinica.horario_semana }}</li>
+        <li>{{ clinica.horario_sabado }}</li>
       </ul>
     </div>
     <div>
       <h3>Contacto</h3>
-      <ul><!-- REEMPLAZAR por los datos reales -->
-        <li>Calle Ejemplo 1234, oficina 5</li>
-        <li><a href="tel:+56900000000">+56 9 0000 0000</a></li>
-        <li><a href="mailto:contacto@dentalsimase.cl">contacto@dentalsimase.cl</a></li>
+      <ul>
+        <li>{{ clinica.direccion }}</li>
+        <li><a href="tel:{{ clinica.telefono }}">{{ clinica.telefono }}</a></li>
+        <li><a href="mailto:{{ clinica.correo }}">{{ clinica.correo }}</a></li>
       </ul>
     </div>
   </div>
   <div class="urgencia">
     <p>Dolor fuerte, golpe o un diente que se soltó: llámanos y te orientamos sobre qué hacer mientras llegas.</p>
   </div>
-  <div class="legal">&copy; {% now "Y" %} Clínica Dental Simase. Proyecto académico de Ingeniería de Software.</div>
+  <div class="legal">&copy; {% now "Y" %} {{ clinica.nombre }}. Proyecto académico de Ingeniería de Software.</div>
 </footer>
 
 <script>

@@ -73,9 +73,20 @@ class Tratamiento(models.Model):
     atencion = models.ForeignKey(
         Atencion, on_delete=models.CASCADE, related_name='tratamientos'
     )
-    nombre = models.CharField(max_length=100)
-    costo = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=20)
+    tipo_atencion = models.ForeignKey(
+        'citas.TipoAtencion', on_delete=models.PROTECT, related_name='tratamientos'
+    )
+    # Se copian del catálogo al crear: nadie los escribe a mano y, si el
+    # arancel cambia después, las atenciones antiguas conservan su valor.
+    nombre = models.CharField(max_length=100, editable=False)
+    costo = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    estado = models.CharField(max_length=20, default='Realizado')
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            self.nombre = self.tipo_atencion.nombre
+            self.costo = self.tipo_atencion.costo
+        super().save(*args, **kwargs)
 
     def calcular_costo(self):
         return self.costo

@@ -8,11 +8,16 @@ from .models import EstadoPago, Pago
 
 
 def monto_pendiente(cita):
-    """Suma el costo de los tratamientos de la atención de la cita (0 si no hay)."""
+    """
+    Lo que se debe cobrar por la cita: la suma de los tratamientos de su atención
+    si ya fue atendida; si no, el valor de la atención reservada.
+    """
     atencion = getattr(cita, 'atencion', None)
-    if atencion is None:
-        return Decimal('0')
-    return atencion.tratamientos.aggregate(t=Sum('costo'))['t'] or Decimal('0')
+    if atencion is not None:
+        total = atencion.tratamientos.aggregate(t=Sum('costo'))['t']
+        if total:
+            return total
+    return cita.tipo_atencion.costo
 
 
 @transaction.atomic

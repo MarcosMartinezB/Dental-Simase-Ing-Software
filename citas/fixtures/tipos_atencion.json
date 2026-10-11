@@ -1,0 +1,9 @@
+[
+  {"model": "citas.tipoatencion", "pk": 1, "fields": {"nombre": "Consulta de evaluación", "costo": "20000.00", "duracion_minutos": 30, "activo": true}},
+  {"model": "citas.tipoatencion", "pk": 2, "fields": {"nombre": "Control", "costo": "15000.00", "duracion_minutos": 20, "activo": true}},
+  {"model": "citas.tipoatencion", "pk": 3, "fields": {"nombre": "Limpieza dental", "costo": "35000.00", "duracion_minutos": 45, "activo": true}},
+  {"model": "citas.tipoatencion", "pk": 4, "fields": {"nombre": "Obturación (tapadura)", "costo": "40000.00", "duracion_minutos": 60, "activo": true}},
+  {"model": "citas.tipoatencion", "pk": 5, "fields": {"nombre": "Extracción simple", "costo": "30000.00", "duracion_minutos": 45, "activo": true}},
+  {"model": "citas.tipoatencion", "pk": 6, "fields": {"nombre": "Endodoncia", "costo": "120000.00", "duracion_minutos": 90, "activo": true}},
+  {"model": "citas.tipoatencion", "pk": 7, "fields": {"nombre": "Blanqueamiento", "costo": "90000.00", "duracion_minutos": 60, "activo": true}}
+]

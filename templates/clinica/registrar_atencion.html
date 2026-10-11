@@ -1,0 +1,116 @@
+{# Contexto: cita, form (diagnostico, sin_insumos), formset_tratamientos (prefix 'tratamientos', campo tipo_atencion), #}
+{# formset_insumos (prefix 'insumos', campos insumo y cantidad), precios (dict {id_tipo: costo}). #}
+{# El valor NO es un campo del formulario: se muestra aquí y la vista lo toma del catálogo al guardar. #}
+{% extends 'base.html' %}
+{% block titulo %}Registrar atención{% endblock %}
+{% block extra_css %}
+.fila-form{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:center;margin-bottom:10px}
+.costo-fila{font-weight:700;color:var(--hondo)}
+.total{font-size:1.2rem;font-weight:700;margin-top:10px}
+@media (max-width:860px){.fila-form{grid-template-columns:1fr}}
+{% endblock %}
+{% block contenido %}
+<h1>Registrar atención</h1>
+<div class="tarjeta">
+  <strong>{{ cita.paciente }}</strong> · {{ cita.fecha_hora|date:"d/m/Y H:i" }} · {{ cita.tipo_atencion.nombre }}
+</div>
+
+<form method="post">
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="aviso aviso-error" role="alert">{% for e in form.non_field_errors %}{{ e }} {% endfor %}</div>{% endif %}
+
+  <div class="tarjeta">
+    <h2>Diagnóstico</h2>
+    {% include 'partials/_campo.html' with campo=form.diagnostico %}
+  </div>
+
+  <div class="tarjeta">
+    <h2>Atenciones realizadas</h2>
+    {{ formset_tratamientos.management_form }}
+    {% for e in formset_tratamientos.non_form_errors %}<span class="error-campo">{{ e }}</span>{% endfor %}
+    <div id="filas-tratamientos">
+      {% for f in formset_tratamientos %}
+      <div class="fila-form">
+        <div class="campo">{{ f.tipo_atencion }}{% for e in f.tipo_atencion.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
+        <div class="costo-fila"></div>
+        <button type="button" class="quitar boton-sec">Quitar</button>
+      </div>
+      {% endfor %}
+    </div>
+    <template id="plantilla-tratamientos">
+      <div class="fila-form">
+        <div class="campo">{{ formset_tratamientos.empty_form.tipo_atencion }}</div>
+        <div class="costo-fila"></div>
+        <button type="button" class="quitar boton-sec">Quitar</button>
+      </div>
+    </template>
+    <button type="button" class="boton-mas" data-agregar="tratamientos" aria-label="Agregar otra atención">+</button>
+    <p class="total">Total: <span id="total">$0</span></p>
+  </div>
+
+  <div class="tarjeta">
+    <h2>Insumos utilizados</h2>
+    <div class="campo" style="margin-bottom:14px">
+      <label><input type="checkbox" name="{{ form.sin_insumos.html_name }}" id="{{ form.sin_insumos.id_for_label }}"{% if form.sin_insumos.value %} checked{% endif %} style="width:auto"> No se utilizaron insumos</label>
+    </div>
+    {{ formset_insumos.management_form }}
+    {% for e in formset_insumos.non_form_errors %}<span class="error-campo">{{ e }}</span>{% endfor %}
+    <div id="filas-insumos">
+      {% for f in formset_insumos %}
+      <div class="fila-form">
+        <div class="campo">{{ f.insumo }}{% for e in f.insumo.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
+        <div class="campo">{{ f.cantidad }}{% for e in f.cantidad.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
+        <button type="button" class="quitar boton-sec">Quitar</button>
+      </div>
+      {% endfor %}
+    </div>
+    <template id="plantilla-insumos">
+      <div class="fila-form">
+        <div class="campo">{{ formset_insumos.empty_form.insumo }}</div>
+        <div class="campo">{{ formset_insumos.empty_form.cantidad }}</div>
+        <button type="button" class="quitar boton-sec">Quitar</button>
+      </div>
+    </template>
+    <button type="button" class="boton-mas" data-agregar="insumos" aria-label="Agregar otro insumo">+</button>
+  </div>
+
+  <p style="display:flex;gap:10px">
+    <button class="boton" type="submit">Guardar atención</button>
+    <a class="boton-sec" href="{% url 'panel' %}">Cancelar</a>
+  </p>
+</form>
+{{ precios|json_script:"precios" }}
+{% endblock %}
+{% block extra_js %}
+<script>
+(function () {
+  var precios = JSON.parse(document.getElementById('precios').textContent);
+  function fmt(n) { return '$' + Number(n).toLocaleString('es-CL'); }
+  function recalcular() {
+    var total = 0;
+    document.querySelectorAll('#filas-tratamientos .fila-form').forEach(function (f) {
+      var p = precios[f.querySelector('select').value];
+      f.querySelector('.costo-fila').textContent = p ? fmt(p) : '';
+      total += p ? Number(p) : 0;
+    });
+    document.getElementById('total').textContent = fmt(total);
+  }
+  document.querySelectorAll('[data-agregar]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var n = b.dataset.agregar;
+      var tpl = document.getElementById('plantilla-' + n);
+      var total = document.getElementById('id_' + n + '-TOTAL_FORMS');
+      document.getElementById('filas-' + n).insertAdjacentHTML(
+        'beforeend', tpl.innerHTML.replace(/__prefix__/g, total.value));
+      total.value = parseInt(total.value, 10) + 1;
+      recalcular();
+    });
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.matches('.quitar')) { e.target.closest('.fila-form').remove(); recalcular(); }
+  });
+  document.addEventListener('change', recalcular);
+  recalcular();
+})();
+</script>
+{% endblock %}

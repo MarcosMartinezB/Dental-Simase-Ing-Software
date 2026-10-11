@@ -1,0 +1,15 @@
+{# Contexto: cita, url_volver #}
+{% extends 'base.html' %}
+{% block titulo %}Detalle de cita{% endblock %}
+{% block contenido %}
+<h1>Detalle de la cita</h1>
+<div class="tarjeta">
+  <p><strong>Fecha y hora:</strong> {{ cita.fecha_hora|date:"d/m/Y H:i" }}</p>
+  <p><strong>Paciente:</strong> {{ cita.paciente }}</p>
+  <p><strong>Odontólogo:</strong> {{ cita.odontologo }}</p>
+  <p><strong>Atención:</strong> {{ cita.tipo_atencion.nombre }} ({{ cita.tipo_atencion.duracion_minutos }} min)</p>
+  <p><strong>Estado:</strong> <span class="insignia">{{ cita.get_estado_display }}</span></p>
+  {% if cita.pago %}<p><strong>Pago:</strong> {{ cita.pago.get_estado_display }}</p>{% endif %}
+  <a class="boton-sec" href="{{ url_volver }}">Volver</a>
+</div>
+{% endblock %}

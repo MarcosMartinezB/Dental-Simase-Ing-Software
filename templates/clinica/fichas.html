@@ -1,0 +1,30 @@
+{# Contexto: fichas, q (texto buscado) #}
+{% extends 'base.html' %}
+{% block titulo %}Fichas clínicas{% endblock %}
+{% block contenido %}
+<h1>Fichas clínicas</h1>
+<form method="get" class="tarjeta" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
+  <div class="campo" style="flex:1;min-width:220px">
+    <label for="q">Buscar por RUT o nombre</label>
+    <input type="search" id="q" name="q" value="{{ q }}">
+  </div>
+  <button class="boton" type="submit">Buscar</button>
+</form>
+{% if fichas %}
+<table class="tabla">
+  <thead><tr><th>RUT</th><th>Paciente</th><th>Ficha abierta</th><th></th></tr></thead>
+  <tbody>
+  {% for f in fichas %}
+  <tr>
+    <td>{{ f.paciente.rut }}</td>
+    <td>{{ f.paciente.usuario.get_full_name }}</td>
+    <td>{{ f.fecha_creacion|date:"d/m/Y" }}</td>
+    <td><a class="boton-sec" href="{% url 'ficha_detalle' f.pk %}">Abrir ficha</a></td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="tarjeta">No se encontraron fichas.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{# Contexto: ficha, form_antecedentes, atenciones, citas_pendientes #}
+{% extends 'base.html' %}
+{% block titulo %}Ficha clínica{% endblock %}
+{% block contenido %}
+<h1>Ficha de {{ ficha.paciente }}</h1>
+<p>Abierta el {{ ficha.fecha_creacion|date:"d/m/Y" }}</p>
+
+<form method="post" class="tarjeta">
+  {% csrf_token %}
+  <h2>Antecedentes médicos</h2>
+  {% include 'partials/_campo.html' with campo=form_antecedentes.antecedentes_medicos %}
+  <button class="boton" type="submit" style="margin-top:12px">Actualizar antecedentes</button>
+</form>
+
+{% if citas_pendientes %}
+<div class="tarjeta">
+  <h2>Citas por atender</h2>
+  <table class="tabla">
+    <tbody>
+    {% for c in citas_pendientes %}
+    <tr>
+      <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
+      <td>{{ c.tipo_atencion.nombre }}</td>
+      <td><a class="boton" href="{% url 'registrar_atencion' c.pk %}">Atender</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<h2>Historial de atenciones</h2>
+{% for a in atenciones %}
+<div class="tarjeta">
+  <h3>{{ a.fecha_hora|date:"d/m/Y H:i" }}</h3>
+  <p><strong>Diagnóstico:</strong> {{ a.diagnostico|default:"Sin diagnóstico registrado" }}</p>
+  <ul>
+    {% for t in a.tratamientos.all %}<li>{{ t.nombre }}: ${{ t.costo|floatformat:"0g" }}</li>{% empty %}<li>Sin tratamientos.</li>{% endfor %}
+  </ul>
+</div>
+{% empty %}
+<div class="tarjeta">Aún no hay atenciones registradas.</div>
+{% endfor %}
+{% endblock %}

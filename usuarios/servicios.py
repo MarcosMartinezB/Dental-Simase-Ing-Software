@@ -1,13 +1,13 @@
 import secrets
 import string
 
-from django.contrib.auth.password_validation import validate_password
-from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 
 from .models import Odontologo, Paciente, RolUsuario, Usuario
 from .validators import normalizar_rut
 
+# Quién puede crear a quién (el superusuario crea administradores).
 ROLES_QUE_PUEDE_CREAR = {
     RolUsuario.ADMINISTRADOR: {
         RolUsuario.ODONTOLOGO, RolUsuario.RECEPCIONISTA, RolUsuario.INVENTARIO,
@@ -28,12 +28,14 @@ def verificar_permiso(creador, rol):
 
 
 def generar_password(largo=12):
-    alfabeto = string.ascii_letters + string.digits + '!@#$%&*'
+    """Contraseña aleatoria con mayúscula, minúscula, número y símbolo."""
+    simbolos = '!@#$%&*'
+    alfabeto = string.ascii_letters + string.digits + simbolos
     while True:
         clave = ''.join(secrets.choice(alfabeto) for _ in range(largo))
         if (any(c.islower() for c in clave) and any(c.isupper() for c in clave)
                 and any(c.isdigit() for c in clave)
-                and any(c in '!@#$%&*' for c in clave)):
+                and any(c in simbolos for c in clave)):
             return clave
 
 
@@ -57,6 +59,8 @@ def crear_usuario_interno(creador, rol, *, username, email, first_name,
 def registrar_paciente(creador, *, rut, email, first_name, last_name,
                        fecha_nacimiento, telefono=''):
     """Recepcionista registra un paciente. Devuelve (paciente, clave_temporal)."""
+    from fichas.models import FichaClinica  # import local: evita ciclos entre apps
+
     verificar_permiso(creador, RolUsuario.PACIENTE)
     rut = normalizar_rut(rut)
     clave = generar_password()
@@ -69,4 +73,5 @@ def registrar_paciente(creador, *, rut, email, first_name, last_name,
                         fecha_nacimiento=fecha_nacimiento)
     paciente.full_clean()
     paciente.save()
+    FichaClinica.objects.create(paciente=paciente)  # cada paciente nace con su ficha
     return paciente, clave

@@ -81,6 +81,8 @@ class Pago(models.Model):
             raise ValidationError('Debe seleccionar un medio de pago.')
         with transaction.atomic():
             self.estado = estrategia.procesar_pago(self.monto)
+            # Motivo del rechazo para informarlo en pantalla (no se guarda en la BD).
+            self.motivo_rechazo = getattr(estrategia, 'motivo', '')
             self.fecha_pago = timezone.now()
             self.save()
             if self.estado == EstadoPago.APROBADO:

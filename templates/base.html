@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
 :root{--verde:#2f9e8f;--hondo:#17574f;--menta:#e6f4f0;--fondo:#f4faf8;--tinta:#12302c;--suave:#4a6762;--borde:#cfe5df;--ambar:#f2b84b;--rojo:#7a1f17}
 *{box-sizing:border-box}
@@ -66,6 +67,15 @@ a{color:var(--hondo)}
   .contenido{padding:20px 16px}
   .usuario{display:none}
 }
+.pie-sistema{background:var(--hondo);color:#e3f3ee;padding:16px 24px;font-size:.9rem;display:flex;flex-wrap:wrap;gap:6px 28px;justify-content:space-between}
+.pie-sistema a{color:#bfe3da}
+@media print{.pie-sistema{display:none}}
+/* Bootstrap en verde clínico */
+:root{--bs-primary:#17574f;--bs-primary-rgb:23,87,79;--bs-link-color:#17574f;--bs-link-hover-color:#12453f}
+.btn-primary{--bs-btn-bg:#17574f;--bs-btn-border-color:#17574f;--bs-btn-hover-bg:#1c6a5f;--bs-btn-hover-border-color:#1c6a5f;--bs-btn-active-bg:#12453f;--bs-btn-active-border-color:#12453f}
+.alert{border-radius:12px}
+.alert-success{--bs-alert-color:#1d5a2c;--bs-alert-bg:#e3f5e8;--bs-alert-border-color:#9fd3ae}
+.alert-info{--bs-alert-color:#17574f;--bs-alert-bg:#e6f4f0;--bs-alert-border-color:#cfe5df}
 {% block extra_css %}{% endblock %}
 </style>
 </head>
@@ -105,7 +115,10 @@ a{color:var(--hondo)}
     {% if messages %}
     <div class="mensajes">
       {% for m in messages %}
-      <div class="aviso aviso-{{ m.tags }}" role="status">{{ m }}</div>
+      <div class="alert alert-{{ m.tags|default:'info' }} alert-dismissible fade show" role="alert">
+        {{ m }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
       {% endfor %}
     </div>
     {% endif %}
@@ -114,6 +127,15 @@ a{color:var(--hondo)}
   </main>
 </div>
 
+<footer class="pie-sistema">
+  <span><strong>{{ clinica.nombre }}</strong></span>
+  <span>{{ clinica.direccion }}</span>
+  <span>Tel. <a href="tel:{{ clinica.telefono }}">{{ clinica.telefono }}</a></span>
+  <span><a href="mailto:{{ clinica.correo }}">{{ clinica.correo }}</a></span>
+  <span>{{ clinica.horario_semana }} · {{ clinica.horario_sabado }}</span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

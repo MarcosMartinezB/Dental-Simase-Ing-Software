@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
+from django.contrib.messages import constants as messages_constants
 from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +34,7 @@ INSTALLED_APPS = [
     'citas',
     'pagos',
     'inventario',
+    'administracion',
     
 ]
 
@@ -78,6 +81,7 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+        'charset': 'utf8mb4',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         },
@@ -131,3 +135,9 @@ AUTH_USER_MODEL = 'usuarios.Usuario'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'panel'
 LOGOUT_REDIRECT_URL = 'login'
+# Los mensajes de error se ven como alertas rojas de Bootstrap ("danger")
+MESSAGE_TAGS = {messages_constants.ERROR: 'danger'}
+
+# Correo: en desarrollo se imprime en la consola del servidor
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'Dental Simase <no-responder@dentalsimase.cl>'

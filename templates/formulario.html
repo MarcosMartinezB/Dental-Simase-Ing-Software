@@ -1,0 +1,22 @@
+{# Formulario genérico. Contexto: titulo, subtitulo (opc.), form, texto_boton (opc.), url_cancelar (opc.) #}
+{# Sirve para: registrar paciente, agendar/reservar cita, cambiar contraseña, registrar movimiento, crear usuario, crear/editar arancel #}
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block contenido %}
+<h1>{{ titulo }}</h1>
+{% if subtitulo %}<p>{{ subtitulo }}</p>{% endif %}
+<form method="post" class="tarjeta">
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+  <div class="aviso aviso-error" role="alert">{% for e in form.non_field_errors %}{{ e }} {% endfor %}</div>
+  {% endif %}
+  <div class="grid-form">
+    {% for campo in form.visible_fields %}{% include 'partials/_campo.html' %}{% endfor %}
+  </div>
+  {% for h in form.hidden_fields %}{{ h }}{% endfor %}
+  <p style="margin:20px 0 0;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="boton" type="submit">{{ texto_boton|default:"Guardar" }}</button>
+    {% if url_cancelar %}<a class="boton-sec" href="{{ url_cancelar }}">Cancelar</a>{% endif %}
+  </p>
+</form>
+{% endblock %}

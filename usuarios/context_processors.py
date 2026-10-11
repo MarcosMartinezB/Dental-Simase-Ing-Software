@@ -10,7 +10,7 @@ MENU_POR_ROL = {
         ('Registrar paciente', 'registrar_paciente'),
         ('Agendar cita', 'agendar_cita'),
         ('Agenda del día', 'agenda_dia'),
-        ('Registrar pago', 'registrar_pago'),
+        ('Registrar pago', 'cobros'),
     ],
     RolUsuario.PACIENTE: [
         ('Inicio', 'panel'),
@@ -22,13 +22,13 @@ MENU_POR_ROL = {
         ('Inicio', 'panel'),
         ('Mis citas', 'citas_odontologo'),
         ('Fichas clínicas', 'fichas'),
-        ('Registrar atención', 'registrar_atencion'),
         ('Cambiar contraseña', 'cambiar_password'),
     ],
     RolUsuario.INVENTARIO: [
         ('Inicio', 'panel'),
         ('Stock', 'stock'),
-        ('Registrar movimiento', 'registrar_movimiento'),
+        ('Registrar movimiento', 'registrar_movimiento'),('Nuevo insumo', 'crear_insumo'),
+	
     ],
     RolUsuario.ADMINISTRADOR: [
         ('Inicio', 'panel'),
