@@ -4,55 +4,37 @@
 {% block titulo %}{{ titulo }}{% endblock %}
 {% block contenido %}
 <h1>{{ titulo }}</h1>
-
-{% if url_nueva %}
-<div style="margin-bottom: 20px;">
-  <a class="boton" href="{{ url_nueva }}">Agendar nueva cita</a>
-</div>
-{% endif %}
-
+{% if url_nueva %}<p><a class="boton" href="{{ url_nueva }}">Agendar nueva cita</a></p>{% endif %}
 {% if citas %}
-<div class="tarjeta" style="padding: 0; overflow: hidden;">
-  <table class="tabla mb-0">
-    <thead>
-      <tr>
-        <th>Fecha y hora</th>
-        {% if mostrar_paciente %}<th>Paciente</th>{% endif %}
-        {% if mostrar_odontologo %}<th>Odontólogo</th>{% endif %}
-        <th>Atención</th>
-        <th>Duración</th>
-        <th>Estado</th>
-        <th style="text-align: right;">Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for cita in citas %}
-      <tr>
-        <td><strong>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</strong></td>
-        {% if mostrar_paciente %}<td>{{ cita.paciente }}</td>{% endif %}
-        {% if mostrar_odontologo %}<td>{{ cita.odontologo }}</td>{% endif %}
-        <td>{{ cita.tipo_atencion.nombre }}</td>
-        <td>{{ cita.tipo_atencion.duracion_minutos }} min</td>
-        <td><span class="insignia">{{ cita.get_estado_display }}</span></td>
-        <td style="text-align: right;">
-          <div style="display: inline-flex; gap: 8px; align-items: center; justify-content: flex-end;">
-            <a class="boton-sec" href="{% url 'detalle_cita' cita.pk %}" style="padding: 6px 14px; font-size: 0.85rem;">Ver</a>
-            {% if puede_cancelar and cita.estado != 'CANCELADA' and cita.estado != 'COMPLETADA' %}
-            <form method="post" action="{% url 'cancelar_cita' cita.pk %}" onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta cita?')" style="margin: 0; display: inline;">
-              {% csrf_token %}
-              <button class="boton-sec" type="submit" style="padding: 6px 14px; font-size: 0.85rem; background: #f8d7da; color: #842029; border-color: #f5c2c7;">Cancelar</button>
-            </form>
-            {% endif %}
-          </div>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+<table class="tabla">
+  <thead><tr>
+    <th>Fecha y hora</th>
+    {% if mostrar_paciente %}<th>Paciente</th>{% endif %}
+    {% if mostrar_odontologo %}<th>Odontólogo</th>{% endif %}
+    <th>Atención</th><th>Duración</th><th>Estado</th><th></th>
+  </tr></thead>
+  <tbody>
+  {% for cita in citas %}
+  <tr>
+    <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
+    {% if mostrar_paciente %}<td>{{ cita.paciente }}</td>{% endif %}
+    {% if mostrar_odontologo %}<td>{{ cita.odontologo }}</td>{% endif %}
+    <td>{{ cita.tipo_atencion.nombre }}</td>
+    <td>{{ cita.tipo_atencion.duracion_minutos }} min</td>
+    <td><span class="insignia">{{ cita.get_estado_display }}</span></td>
+    <td style="display:flex;gap:8px">
+      <a class="boton-sec" href="{% url 'detalle_cita' cita.pk %}">Ver</a>
+      {% if puede_cancelar and cita.estado != 'CANCELADA' and cita.estado != 'COMPLETADA' %}
+      <form method="post" action="{% url 'cancelar_cita' cita.pk %}" onsubmit="return confirm('¿Cancelar esta cita?')">
+        {% csrf_token %}<button class="boton-sec" type="submit">Cancelar</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
 {% else %}
-<div class="tarjeta">
-  <p style="margin: 0; color: var(--text-muted);">No hay citas registradas para mostrar.</p>
-</div>
+<div class="tarjeta">No hay citas para mostrar.</div>
 {% endif %}
 {% endblock %}

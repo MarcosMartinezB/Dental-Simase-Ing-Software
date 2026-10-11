@@ -48,13 +48,23 @@ def construir_resumen(desde, hasta):
                   f"{frecuente['nombre']} ({frecuente['n']})" if frecuente else '-'))
 
     pagos = Pago.objects.filter(fecha_pago__gte=inicio, fecha_pago__lt=fin)
-    aprobados = pagos.filter(estado=EstadoPago.APROBADO)
-    por_medio = dict(aprobados.values_list('medio').annotate(t=Sum('monto')))
+    cobrados = pagos.filter(estado__in=[EstadoPago.APROBADO, EstadoPago.REEMBOLSADO])
+    por_medio = dict(cobrados.values_list('medio').annotate(t=Sum('monto')))
+    total_cobrado = cobrados.aggregate(t=Sum('monto'))['t'] or 0
+    devueltos = Pago.objects.filter(
+        estado=EstadoPago.REEMBOLSADO, fecha_reembolso__gte=inicio, fecha_reembolso__lt=fin)
+    total_devuelto = devueltos.aggregate(t=Sum('monto'))['t'] or 0
+    pendientes = Pago.objects.filter(
+        estado=EstadoPago.APROBADO, cita__estado=EstadoCita.CANCELADA).count()
     filas += [
-        ('Pagos aprobados', aprobados.count()),
-        ('Total recaudado', clp(aprobados.aggregate(t=Sum('monto'))['t'])),
+        ('Pagos aprobados', cobrados.count()),
+        ('Total cobrado', clp(total_cobrado)),
         ('   - En efectivo', clp(por_medio.get(MedioPago.EFECTIVO))),
         ('   - Con tarjeta presencial', clp(por_medio.get(MedioPago.TARJETA_PRESENCIAL))),
+        ('Devoluciones realizadas', devueltos.count()),
+        ('Total devuelto', clp(total_devuelto)),
+        ('Recaudación neta', clp(total_cobrado - total_devuelto)),
+        ('Devoluciones pendientes (hoy)', pendientes),
         ('Pagos rechazados', pagos.filter(estado=EstadoPago.RECHAZADO).count()),
     ]
 

@@ -3,23 +3,13 @@
 {% block titulo %}Detalle de cita{% endblock %}
 {% block contenido %}
 <h1>Detalle de la cita</h1>
-
-<div class="tarjeta" style="max-width: 700px; margin: 0 auto;">
-  <div style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 24px; font-size: 1.05rem;">
-    <p style="margin: 0;"><strong>Fecha y hora:</strong> <span style="color: var(--primary-color);">{{ cita.fecha_hora|date:"d/m/Y H:i" }}</span></p>
-    <p style="margin: 0;"><strong>Paciente:</strong> {{ cita.paciente }}</p>
-    <p style="margin: 0;"><strong>Odontólogo:</strong> {{ cita.odontologo }}</p>
-    <p style="margin: 0;"><strong>Atención:</strong> {{ cita.tipo_atencion.nombre }} <span style="color: var(--text-muted); font-size: 0.9rem;">({{ cita.tipo_atencion.duracion_minutos }} min)</span></p>
-    <p style="margin: 0; display: flex; align-items: center; gap: 8px;">
-      <strong>Estado:</strong> <span class="insignia">{{ cita.get_estado_display }}</span>
-    </p>
-    {% if cita.pago %}
-    <p style="margin: 0;"><strong>Pago:</strong> {{ cita.pago.get_estado_display }}</p>
-    {% endif %}
-  </div>
-
-  <div style="border-top: 1px solid var(--border-color); padding-top: 20px; display: flex; justify-content: flex-start;">
-    <a class="boton-sec" href="{{ url_volver }}">Volver</a>
-  </div>
+<div class="tarjeta">
+  <p><strong>Fecha y hora:</strong> {{ cita.fecha_hora|date:"d/m/Y H:i" }}</p>
+  <p><strong>Paciente:</strong> {{ cita.paciente }}</p>
+  <p><strong>Odontólogo:</strong> {{ cita.odontologo }}</p>
+  <p><strong>Atención:</strong> {{ cita.tipo_atencion.nombre }} ({{ cita.tipo_atencion.duracion_minutos }} min)</p>
+  <p><strong>Estado:</strong> <span class="insignia">{{ cita.get_estado_display }}</span></p>
+  {% if cita.pago %}<p><strong>Pago:</strong> {{ cita.pago.get_estado_display }}</p>{% endif %}
+  <a class="boton-sec" href="{{ url_volver }}">Volver</a>
 </div>
 {% endblock %}

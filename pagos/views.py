@@ -1,16 +1,19 @@
 from django.contrib import messages
+from django.contrib.admin.models import CHANGE
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
 from citas.models import Cita, EstadoCita
+from usuarios import auditoria
 from usuarios.models import RolUsuario
 from usuarios.permisos import rol_requerido
 
 from . import servicios
 from .estrategias import PagoEfectivo, PagoTarjetaPresencial
-from .forms import PagoForm
+from .forms import DevolucionForm, PagoForm
 from .models import EstadoPago, MedioPago, Pago
 
 RELACIONES = ('paciente__usuario', 'odontologo__usuario', 'tipo_atencion', 'atencion', 'pago')
@@ -82,4 +85,47 @@ def comprobante(request, pk):
         vuelto = pago.estrategia.calcular_vuelto(pago.monto)
     return render(request, 'recepcion/comprobante.html', {
         'pago': pago, 'comprobante': emitido, 'cita': pago.cita, 'vuelto': vuelto,
+    })
+
+
+# --- Devoluciones: citas canceladas que ya estaban pagadas ----------------------
+@rol_requerido(RolUsuario.RECEPCIONISTA)
+def devoluciones(request):
+    pagos = (Pago.objects
+             .filter(estado=EstadoPago.APROBADO, cita__estado=EstadoCita.CANCELADA)
+             .select_related('cita__paciente__usuario', 'cita__tipo_atencion')
+             .order_by('cita__fecha_hora'))
+    return render(request, 'recepcion/devoluciones.html', {'pagos': pagos})
+
+
+@rol_requerido(RolUsuario.RECEPCIONISTA)
+def registrar_devolucion(request, pago_id):
+    pago = get_object_or_404(
+        Pago.objects.select_related('cita__paciente__usuario'), pk=pago_id)
+    if pago.estado != EstadoPago.APROBADO or pago.cita.estado != EstadoCita.CANCELADA:
+        messages.error(request, 'Este pago no tiene una devolución pendiente.')
+        return redirect('devoluciones')
+
+    form = DevolucionForm(request.POST or None, medio=pago.medio)
+    if request.method == 'POST' and form.is_valid():
+        try:
+            pago.reembolsar(form.cleaned_data.get('referencia_reembolso', ''))
+        except ValidationError as e:
+            for mensaje in e.messages:
+                form.add_error(None, mensaje)
+        else:
+            auditoria.registrar(request.user, pago, CHANGE,
+                                f'Devolución registrada por ${pago.monto:,.0f}.'.replace(',', '.'))
+            messages.success(request, 'Devolución registrada.')
+            return redirect('devoluciones')
+
+    como = ('en efectivo' if pago.medio == MedioPago.EFECTIVO
+            else 'con la reversa de la operación en el POS')
+    monto = f'${pago.monto:,.0f}'.replace(',', '.')
+    return render(request, 'formulario.html', {
+        'titulo': 'Registrar devolución',
+        'subtitulo': f'Devolver {monto} a {pago.cita.paciente} {como}. '
+                     'Confirma aquí cuando ya se haya devuelto el dinero.',
+        'form': form, 'texto_boton': 'Confirmar devolución',
+        'url_cancelar': reverse('devoluciones'),
     })

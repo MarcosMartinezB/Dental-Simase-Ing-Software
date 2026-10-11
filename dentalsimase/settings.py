@@ -62,6 +62,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'usuarios.context_processors.menu',
+                'usuarios.context_processors.clinica',
             ],
         },
     },
@@ -141,3 +142,11 @@ MESSAGE_TAGS = {messages_constants.ERROR: 'danger'}
 # Correo: en desarrollo se imprime en la consola del servidor
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'Dental Simase <no-responder@dentalsimase.cl>'
+CLINICA = {
+    'nombre': 'Clínica Dental Simase',
+    'direccion': 'Calle Ejemplo 1234, oficina 5',
+    'telefono': '+56 9 0000 0000',
+    'correo': 'contacto@dentalsimase.cl',
+    'horario_semana': 'Lunes a viernes: 09:00 a 19:00',
+    'horario_sabado': 'Sábado: 09:00 a 13:00',
+}

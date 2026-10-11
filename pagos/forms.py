@@ -27,3 +27,14 @@ class PagoForm(forms.Form):
             if not d.get('resultado_pos'):
                 self.add_error('resultado_pos', 'Indica el resultado que mostró el POS.')
         return d
+
+
+class DevolucionForm(forms.Form):
+    """En efectivo no pide nada; con tarjeta exige la referencia de la reversa en el POS."""
+    referencia_reembolso = forms.CharField(
+        label='Referencia de la reversa en el POS', max_length=50)
+
+    def __init__(self, *args, medio=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if medio != MedioPago.TARJETA_PRESENCIAL:
+            del self.fields['referencia_reembolso']

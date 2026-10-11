@@ -10,6 +10,7 @@ class EstadoPago(models.TextChoices):
     PENDIENTE = 'PENDIENTE', 'Pendiente'
     APROBADO = 'APROBADO', 'Aprobado'
     RECHAZADO = 'RECHAZADO', 'Rechazado'
+    REEMBOLSADO = 'REEMBOLSADO', 'Reembolsado'
 
 
 class MedioPago(models.TextChoices):
@@ -33,7 +34,7 @@ class Pago(models.Model):
     )
     fecha_pago = models.DateTimeField(null=True, blank=True)
     estado = models.CharField(
-        max_length=10, choices=EstadoPago.choices, default=EstadoPago.PENDIENTE
+        max_length=12, choices=EstadoPago.choices, default=EstadoPago.PENDIENTE
     )
 
     # Datos que usa la estrategia elegida (según el medio, solo algunos aplican).
@@ -45,6 +46,9 @@ class Pago(models.Model):
     resultado_pos = models.CharField(
         max_length=10, choices=ResultadoPOS.choices, blank=True
     )
+    # Devolución cuando la cita pagada se cancela.
+    fecha_reembolso = models.DateTimeField(null=True, blank=True)
+    referencia_reembolso = models.CharField(max_length=50, blank=True)
 
     class Meta:
         ordering = ['-fecha_pago']
@@ -88,6 +92,20 @@ class Pago(models.Model):
             if self.estado == EstadoPago.APROBADO:
                 ComprobantePago(pago=self).generar()  # solo los aprobados
         return self.estado
+
+    def reembolsar(self, referencia=''):
+        """Registra la devolución del dinero de una cita cancelada que estaba pagada."""
+        from citas.models import EstadoCita
+        if self.estado != EstadoPago.APROBADO:
+            raise ValidationError('Solo se puede devolver un pago aprobado.')
+        if self.cita.estado != EstadoCita.CANCELADA:
+            raise ValidationError('Solo se devuelve el pago de una cita cancelada.')
+        if self.medio == MedioPago.TARJETA_PRESENCIAL and not referencia:
+            raise ValidationError('Ingresa la referencia de la reversa hecha en el POS.')
+        self.estado = EstadoPago.REEMBOLSADO
+        self.fecha_reembolso = timezone.now()
+        self.referencia_reembolso = referencia
+        self.save(update_fields=['estado', 'fecha_reembolso', 'referencia_reembolso'])
 
     # --- Validaciones -----------------------------------------------------
     def clean(self):

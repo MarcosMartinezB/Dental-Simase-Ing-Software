@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.urls import NoReverseMatch, reverse
 
 from .models import RolUsuario
@@ -11,6 +12,7 @@ MENU_POR_ROL = {
         ('Agendar cita', 'agendar_cita'),
         ('Agenda del día', 'agenda_dia'),
         ('Registrar pago', 'cobros'),
+        ('Devoluciones', 'devoluciones'),
     ],
     RolUsuario.PACIENTE: [
         ('Inicio', 'panel'),
@@ -27,8 +29,8 @@ MENU_POR_ROL = {
     RolUsuario.INVENTARIO: [
         ('Inicio', 'panel'),
         ('Stock', 'stock'),
-        ('Registrar movimiento', 'registrar_movimiento'),('Nuevo insumo', 'crear_insumo'),
-	
+        ('Nuevo insumo', 'crear_insumo'),
+        ('Registrar movimiento', 'registrar_movimiento'),
     ],
     RolUsuario.ADMINISTRADOR: [
         ('Inicio', 'panel'),
@@ -56,3 +58,8 @@ def menu(request):
         items.append({'etiqueta': 'Admin de Django', 'url': reverse('admin:index'),
                       'activo': False})
     return {'menu_items': items}
+
+
+def clinica(request):
+    """Datos de contacto del pie de página: se definen una sola vez en settings.CLINICA."""
+    return {'clinica': getattr(settings, 'CLINICA', {})}

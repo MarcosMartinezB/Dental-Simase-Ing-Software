@@ -137,7 +137,16 @@ def cancelar_cita(request, pk):
         raise PermissionDenied
     try:
         cita.cancelar()
-        messages.success(request, 'La cita fue cancelada.')
+        pago = getattr(cita, 'pago', None)
+        if pago is not None and pago.estado == 'APROBADO':
+            if u.rol == RolUsuario.PACIENTE:
+                messages.warning(request, 'La cita fue cancelada. Como tenía un pago aprobado, '
+                                          'recepción te devolverá el dinero.')
+            else:
+                messages.warning(request, 'La cita fue cancelada. Tenía un pago aprobado: '
+                                          'regístralo en Devoluciones para devolver el dinero.')
+        else:
+            messages.success(request, 'La cita fue cancelada.')
     except ValidationError as e:
         messages.error(request, ' '.join(e.messages))
     return redirect(_url_lista(u))

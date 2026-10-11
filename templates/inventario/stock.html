@@ -3,53 +3,26 @@
 {% block titulo %}Stock{% endblock %}
 {% block contenido %}
 <h1>Stock de insumos</h1>
-
 {% if cantidad_bajo %}
-<div class="aviso aviso-warning mb-4" role="alert"><strong>Atención:</strong> {{ cantidad_bajo }} insumo(s) se encuentran bajo el stock mínimo. Conviene reabastecer a la brevedad.</div>
+<div class="aviso aviso-warning" role="alert">{{ cantidad_bajo }} insumo(s) bajo el mínimo: conviene reabastecer.</div>
 {% endif %}
-
-<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
+<p style="display:flex;gap:10px;flex-wrap:wrap">
   <a class="boton" href="{% url 'registrar_movimiento' %}">Registrar movimiento</a>
-  {% if solo_bajo %}
-  <a class="boton-sec" href="{% url 'stock' %}">Ver todos</a>
-  {% else %}
-  <a class="boton-sec" href="{% url 'stock' %}?estado=bajo">Ver solo bajo el mínimo</a>
-  {% endif %}
+  {% if solo_bajo %}<a class="boton-sec" href="{% url 'stock' %}">Ver todos</a>
+  {% else %}<a class="boton-sec" href="{% url 'stock' %}?estado=bajo">Ver solo bajo el mínimo</a>{% endif %}
   <a class="boton-sec" href="{% url 'exportar_stock' %}">Exportar CSV</a>
-</div>
-
-<div class="tarjeta" style="padding:0;overflow:hidden">
-  <table class="tabla mb-0">
-    <thead>
-      <tr>
-        <th>Código</th>
-        <th>Insumo</th>
-        <th>Stock actual</th>
-        <th>Mínimo</th>
-        <th>Estado</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for i in insumos %}
-      <tr>
-        <td><strong>{{ i.codigo }}</strong></td>
-        <td>{{ i.nombre }}</td>
-        <td><strong>{{ i.stock_actual }}</strong></td>
-        <td>{{ i.stock_minimo }}</td>
-        <td>
-          {% if i.verificar_stock_minimo %}
-          <span class="insignia" style="background:#d1e7dd;color:#0f5132">Suficiente</span>
-          {% else %}
-          <span class="insignia" style="background:#fff3cd;color:#664d03">Reabastecer</span>
-          {% endif %}
-        </td>
-      </tr>
-    {% empty %}
-      <tr>
-        <td colspan="5" style="text-align:center;padding:24px;color:var(--text-muted);">No hay insumos registrados en el sistema.</td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+</p>
+<table class="tabla">
+  <thead><tr><th>Código</th><th>Insumo</th><th>Stock actual</th><th>Mínimo</th><th>Estado</th></tr></thead>
+  <tbody>
+  {% for i in insumos %}
+  <tr>
+    <td>{{ i.codigo }}</td><td>{{ i.nombre }}</td><td>{{ i.stock_actual }}</td><td>{{ i.stock_minimo }}</td>
+    <td>{% if i.verificar_stock_minimo %}<span class="insignia">Suficiente</span>{% else %}<span class="insignia" style="background:#fff4dc;color:#6b4a06">Reabastecer</span>{% endif %}</td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="5">No hay insumos registrados.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

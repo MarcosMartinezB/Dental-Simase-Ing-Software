@@ -4,41 +4,18 @@
 {% block extra_css %}@media print{.cabecera,.menu,.no-imprimir,.mensajes{display:none!important}.cuerpo{display:block}}{% endblock %}
 {% block contenido %}
 <h1>Comprobante de pago</h1>
-
-{% if pago.estado == 'REEMBOLSADO' %}
-<div class="aviso aviso-warning mb-3">Este pago fue devuelto el {{ pago.fecha_reembolso|date:"d/m/Y H:i" }}.</div>
-{% endif %}
-
-<div class="tarjeta" style="max-width: 700px; margin: 0 auto;">
-  <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border-color); padding-bottom: 16px; margin-bottom: 20px;">
-    <div>
-      <h2 style="font-size: 1.25rem; margin-bottom: 4px; color: #0f172a;">Clínica Dental SIMASE</h2>
-      <span style="font-size: 0.85rem; color: var(--text-muted);">Documento interno del sistema</span>
-    </div>
-    <div style="text-align: right;">
-      <span class="insignia" style="font-size: 1rem; padding: 6px 14px;">{{ comprobante.numero }}</span>
-      <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">{{ comprobante.fecha_emision|date:"d/m/Y H:i" }}</div>
-    </div>
-  </div>
-
-  <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; font-size: 1rem;">
-    <p style="margin: 0;"><strong>Paciente:</strong> {{ cita.paciente }}</p>
-    <p style="margin: 0;"><strong>Atención:</strong> {{ cita.tipo_atencion.nombre }} · {{ cita.fecha_hora|date:"d/m/Y H:i" }} con {{ cita.odontologo }}</p>
-    <p style="margin: 0;"><strong>Medio de pago:</strong> {{ pago.get_medio_display }}{% if pago.referencia_pos %} · Ref. POS {{ pago.referencia_pos }}{% endif %}</p>
-    
-    {% if vuelto is not None %}
-    <p style="margin: 0;"><strong>Monto recibido:</strong> ${{ pago.monto_recibido|floatformat:"0g" }} · <strong>Vuelto:</strong> ${{ vuelto|floatformat:"0g" }}</p>
-    {% endif %}
-  </div>
-
-  <div style="background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: 12px; padding: 18px; text-align: center; margin-bottom: 24px;">
-    <span style="font-size: 0.9rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Total pagado</span>
-    <strong style="font-size: 1.8rem; color: #0f172a;">${{ comprobante.monto_total|floatformat:"0g" }}</strong>
-  </div>
-
-  <p style="color: var(--text-muted); font-size: .85rem; text-align: center; margin-bottom: 24px;">Documento interno del sistema. No tiene validez tributaria.</p>
-
-  <p class="no-imprimir" style="display: flex; gap: 12px; margin: 0; justify-content: center;">
+{% if pago.estado == 'REEMBOLSADO' %}<div class="alert alert-warning">Este pago fue devuelto el {{ pago.fecha_reembolso|date:"d/m/Y H:i" }}.</div>{% endif %}
+<div class="tarjeta">
+  <p><span class="insignia">{{ comprobante.numero }}</span> &nbsp; {{ comprobante.fecha_emision|date:"d/m/Y H:i" }}</p>
+  <p><strong>Paciente:</strong> {{ cita.paciente }}</p>
+  <p><strong>Atención:</strong> {{ cita.tipo_atencion.nombre }} · {{ cita.fecha_hora|date:"d/m/Y H:i" }} con {{ cita.odontologo }}</p>
+  <p><strong>Medio de pago:</strong> {{ pago.get_medio_display }}{% if pago.referencia_pos %} · Ref. POS {{ pago.referencia_pos }}{% endif %}</p>
+  {% if vuelto is not None %}
+  <p><strong>Monto recibido:</strong> ${{ pago.monto_recibido|floatformat:"0g" }} · <strong>Vuelto:</strong> ${{ vuelto|floatformat:"0g" }}</p>
+  {% endif %}
+  <p style="font-size:1.4rem"><strong>Total pagado: ${{ comprobante.monto_total|floatformat:"0g" }}</strong></p>
+  <p style="color:var(--suave);font-size:.85rem">Documento interno del sistema. No tiene validez tributaria.</p>
+  <p class="no-imprimir" style="display:flex;gap:10px;margin:0">
     <button type="button" class="boton" onclick="window.print()">Imprimir</button>
     <a class="boton-sec" href="{% url 'cobros' %}">Volver a cobros</a>
   </p>

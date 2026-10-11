@@ -23,10 +23,11 @@ class PagoAdmin(admin.ModelAdmin):
     inlines = [ComprobanteInline]
 
     def get_readonly_fields(self, request, obj=None):
-        if obj:  # un pago registrado no se edita
+        if obj:  # un pago registrado no se edita; las devoluciones se hacen en recepción
             return ('cita', 'monto', 'medio', 'monto_recibido', 'referencia_pos',
-                    'resultado_pos', 'estado', 'fecha_pago')
-        return ('estado', 'fecha_pago')
+                    'resultado_pos', 'estado', 'fecha_pago',
+                    'fecha_reembolso', 'referencia_reembolso')
+        return ('estado', 'fecha_pago', 'fecha_reembolso', 'referencia_reembolso')
 
     def save_model(self, request, obj, form, change):
         if not change:
