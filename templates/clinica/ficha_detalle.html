@@ -2,26 +2,30 @@
 {% extends 'base.html' %}
 {% block titulo %}Ficha clínica{% endblock %}
 {% block contenido %}
-<h1>Ficha de {{ ficha.paciente }}</h1>
-<p>Abierta el {{ ficha.fecha_creacion|date:"d/m/Y" }}</p>
+<div class="tarjeta" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-left: 5px solid var(--primary-color);">
+  <h1 style="margin-bottom: 4px;">Ficha de {{ ficha.paciente }}</h1>
+  <p style="color: var(--text-muted); margin: 0; font-size: 0.95rem;">Abierta el {{ ficha.fecha_creacion|date:"d/m/Y" }}</p>
+</div>
 
 <form method="post" class="tarjeta">
   {% csrf_token %}
-  <h2>Antecedentes médicos</h2>
-  {% include 'partials/_campo.html' with campo=form_antecedentes.antecedentes_medicos %}
-  <button class="boton" type="submit" style="margin-top:12px">Actualizar antecedentes</button>
+  <h2 style="font-size: 1.25rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Antecedentes médicos</h2>
+  <div style="margin-bottom: 16px;">
+    {% include 'partials/_campo.html' with campo=form_antecedentes.antecedentes_medicos %}
+  </div>
+  <button class="boton" type="submit">Actualizar antecedentes</button>
 </form>
 
 {% if citas_pendientes %}
 <div class="tarjeta">
-  <h2>Citas por atender</h2>
-  <table class="tabla">
+  <h2 style="font-size: 1.25rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Citas por atender</h2>
+  <table class="tabla mb-0">
     <tbody>
     {% for c in citas_pendientes %}
     <tr>
-      <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
+      <td><strong>{{ c.fecha_hora|date:"d/m/Y H:i" }}</strong></td>
       <td>{{ c.tipo_atencion.nombre }}</td>
-      <td><a class="boton" href="{% url 'registrar_atencion' c.pk %}">Atender</a></td>
+      <td style="text-align: right;"><a class="boton" href="{% url 'registrar_atencion' c.pk %}" style="padding: 8px 16px; font-size: 0.875rem;">Atender</a></td>
     </tr>
     {% endfor %}
     </tbody>
@@ -29,16 +33,23 @@
 </div>
 {% endif %}
 
-<h2>Historial de atenciones</h2>
+<h2 style="font-size: 1.4rem; margin-top: 32px; margin-bottom: 16px;">Historial de atenciones</h2>
 {% for a in atenciones %}
 <div class="tarjeta">
-  <h3>{{ a.fecha_hora|date:"d/m/Y H:i" }}</h3>
-  <p><strong>Diagnóstico:</strong> {{ a.diagnostico|default:"Sin diagnóstico registrado" }}</p>
-  <ul>
-    {% for t in a.tratamientos.all %}<li>{{ t.nombre }}: ${{ t.costo|floatformat:"0g" }}</li>{% empty %}<li>Sin tratamientos.</li>{% endfor %}
+  <h3 style="font-size: 1.15rem; color: var(--primary-color); margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px;">{{ a.fecha_hora|date:"d/m/Y H:i" }}</h3>
+  <p style="margin-bottom: 12px;"><strong>Diagnóstico:</strong> {{ a.diagnostico|default:"Sin diagnóstico registrado" }}</p>
+  <strong style="display: block; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 6px;">Tratamientos aplicados:</strong>
+  <ul style="margin: 0; padding-left: 20px; color: var(--text-main);">
+    {% for t in a.tratamientos.all %}
+    <li style="margin-bottom: 4px;">{{ t.nombre }}: <strong>${{ t.costo|floatformat:"0g" }}</strong></li>
+    {% empty %}
+    <li style="color: var(--text-muted);">Sin tratamientos registrados.</li>
+    {% endfor %}
   </ul>
 </div>
 {% empty %}
-<div class="tarjeta">Aún no hay atenciones registradas.</div>
+<div class="tarjeta">
+  <p style="margin: 0; color: var(--text-muted);">Aún no hay atenciones clínicas registradas para este paciente.</p>
+</div>
 {% endfor %}
 {% endblock %}

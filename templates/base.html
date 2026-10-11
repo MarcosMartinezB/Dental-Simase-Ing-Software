@@ -3,79 +3,152 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block titulo %}Inicio{% endblock %} | Dental Simase</title>
+<title>{% block titulo %}Inicio{% endblock %} | Clínica Dental SIMASE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-:root{--verde:#2f9e8f;--hondo:#17574f;--menta:#e6f4f0;--fondo:#f4faf8;--tinta:#12302c;--suave:#4a6762;--borde:#cfe5df;--ambar:#f2b84b;--rojo:#7a1f17}
+:root {
+  --primary-color: #0d6efd;
+  --primary-dark: #0b5ed7;
+  --primary-light: #e7f1ff;
+  --accent-color: #0dcaf0;
+  --bg-body: #f8f9fa;
+  --text-main: #212529;
+  --text-muted: #495057;
+  --border-color: #dee2e6;
+  --card-bg: #ffffff;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+}
+
 *{box-sizing:border-box}
-body{margin:0;font-family:"Nunito Sans",system-ui,"Segoe UI",sans-serif;color:var(--tinta);background:var(--fondo);line-height:1.55}
-h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;line-height:1.15;margin:0 0 12px}
-h1{font-size:1.8rem;color:var(--hondo)}
-a{color:var(--hondo)}
-:focus-visible{outline:3px solid var(--ambar);outline-offset:2px}
+body{margin:0;font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;color:var(--text-main);background:var(--bg-body);line-height:1.6;display:flex;flex-direction:column;min-height:100vh}
 
-/* Estructura */
-.cabecera{background:var(--hondo);color:#fff}
-.cabecera .fila{display:flex;align-items:center;gap:14px;padding:12px 24px}
-.logo{width:38px;height:38px;border-radius:11px;background:var(--verde);display:grid;place-items:center}
+h1,h2,h3{font-family:"Outfit",sans-serif;font-weight:600;color:#0f172a;margin-top:0}
+h1{font-size:1.75rem;margin-bottom:1rem}
+
+a{color:var(--primary-color);text-decoration:none}
+a:hover{color:var(--primary-dark);text-decoration:underline}
+
+:focus-visible{outline:3px solid var(--accent-color);outline-offset:2px}
+
+/* Cabecera / Navbar */
+.cabecera{background:linear-gradient(135deg, #0f172a 0%, #1e293b 100%);color:#fff;box-shadow:0 4px 6px -1px rgba(0,0,0,0.1)}
+.cabecera .fila{display:flex;align-items:center;gap:16px;padding:14px 28px;max-width:1400px;margin:0 auto}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--primary-color);display:grid;place-items:center;box-shadow:0 2px 4px rgba(13,110,253,0.3)}
 .logo svg{width:24px;height:24px;fill:#fff}
-.marca{font-family:Fraunces,Georgia,serif;font-size:1.25rem;font-weight:600;margin-right:auto}
-.usuario{text-align:right;font-size:.95rem;line-height:1.3}
-.usuario small{display:block;color:#bfe3da}
+.marca{font-family:"Outfit",sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:-0.025em;margin-right:auto;color:#fff}
+.usuario{text-align:right;font-size:0.95rem;line-height:1.4;color:#f1f5f9}
+.usuario small{display:block;color:#cbd5e1;font-weight:500}
 .cabecera form{margin:0}
-.cabecera button{background:#fff;color:var(--hondo);border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
-.cuerpo{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 62px)}
-.menu{background:#fff;border-right:1px solid var(--borde);padding:20px 12px}
-.menu ul{list-style:none;margin:0;padding:0}
-.menu a{display:block;padding:10px 14px;border-radius:10px;text-decoration:none;color:var(--tinta);font-weight:600}
-.menu a:hover{background:var(--menta)}
-.menu a[aria-current="page"]{background:var(--hondo);color:#fff}
-.contenido{padding:32px;max-width:1000px;width:100%}
+.cabecera button{background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 16px;font:inherit;font-weight:600;font-size:0.875rem;cursor:pointer;transition:all 0.2s ease}
+.cabecera button:hover{background:rgba(255,255,255,0.25)}
 
-/* Componentes estándar: todas las pantallas usan estas clases */
-.tarjeta{background:#fff;border:1px solid var(--borde);border-radius:16px;padding:24px;margin-bottom:20px}
-.grid-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-.campo label{display:block;font-weight:700;margin-bottom:6px}
-.campo input,.campo select,.campo textarea{width:100%;padding:11px 13px;font:inherit;border:1.5px solid var(--borde);border-radius:10px;background:#fff;color:var(--tinta)}
-.campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--verde);outline:none;box-shadow:0 0 0 3px rgba(47,158,143,.25)}
-.campo input[readonly]{background:var(--menta)}
-.campo .ayuda{display:block;margin-top:4px;font-size:.85rem;color:var(--suave)}
-.campo .error-campo{display:block;margin-top:4px;font-size:.88rem;color:var(--rojo);font-weight:700}
-.boton,.boton-sec{display:inline-block;padding:11px 20px;border-radius:10px;border:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:none}
-.boton{background:var(--hondo);color:#fff}
-.boton:hover{background:#1c6a5f}
-.boton-sec{background:var(--menta);color:var(--hondo);border:1.5px solid var(--verde)}
-.boton-mas{width:42px;height:42px;padding:0;border-radius:50%;background:var(--verde);color:#fff;font-size:1.5rem;line-height:1;border:0;cursor:pointer}
-.tabla{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--borde);border-radius:12px;overflow:hidden}
-.tabla th,.tabla td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--borde)}
-.tabla th{background:var(--menta);color:var(--hondo)}
-.insignia{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--menta);color:var(--hondo);font-size:.85rem;font-weight:700}
-.mensajes{margin-bottom:20px}
-.aviso{padding:12px 16px;border-radius:10px;margin-bottom:8px;border:1px solid var(--borde);background:#fff}
-.aviso-success{background:#e3f5e8;border-color:#9fd3ae;color:#1d5a2c}
-.aviso-error{background:#fdeceb;border-color:#e9a7a1;color:var(--rojo)}
-.aviso-warning{background:#fff4dc;border-color:#ecc878;color:#6b4a06}
+/* Layout principal */
+.wrapper-principal{display:flex;flex:1}
+.cuerpo{display:grid;grid-template-columns:260px 1fr;width:100%;flex:1}
+.menu{background:#fff;border-right:1px solid var(--border-color);padding:24px 16px;box-shadow:2px 0 5px rgba(0,0,0,0.02)}
+.menu ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.menu a{display:flex;align-items:center;padding:12px 16px;border-radius:10px;text-decoration:none;color:var(--text-main);font-weight:600;font-size:0.95rem;transition:all 0.2s ease}
+.menu a:hover{background:var(--primary-light);color:var(--primary-color)}
+.menu a[aria-current="page"]{background:var(--primary-color);color:#fff;box-shadow:0 4px 12px rgba(13,110,253,0.25)}
+.contenido{padding:36px;max-width:1100px;width:100%}
 
-@media (max-width:860px){
+/* Tarjetas y formularios estandarizados */
+.tarjeta{background:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:28px;margin-bottom:24px;box-shadow:0 4px 6px -1px rgba(0,0,0,0.02)}
+.grid-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.campo label{display:block;font-weight:700;font-size:0.95rem;margin-bottom:8px;color:#0f172a}
+.campo input,.campo select,.campo textarea{width:100%;padding:11px 14px;font:inherit;font-size:0.95rem;border:1.5px solid var(--border-color);border-radius:10px;background:#fff;color:var(--text-main)}
+.campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--primary-color);outline:none;box-shadow:0 0 0 4px rgba(13,110,253,0.15)}
+.campo input[readonly]{background:#f1f5f9;color:#334155}
+.campo .ayuda{display:block;margin-top:6px;font-size:0.87rem;color:var(--text-muted)}
+.campo .error-campo{display:block;margin-top:6px;font-size:0.87rem;color:var(--danger-color);font-weight:700}
+
+/* Botones */
+.boton,.boton-sec{display:inline-flex;align-items:center;justify-content:center;padding:12px 22px;border-radius:10px;border:0;font:inherit;font-weight:600;font-size:0.95rem;cursor:pointer;text-decoration:none;transition:all 0.2s ease}
+.boton{background:var(--primary-color);color:#fff;box-shadow:0 2px 4px rgba(13,110,253,0.2)}
+.boton:hover{background:var(--primary-dark);color:#fff}
+.boton-sec{background:#f1f5f9;color:#1e293b;border:1.5px solid var(--border-color)}
+.boton-sec:hover{background:#e2e8f0}
+
+/* Tablas */
+.tabla{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--border-color);border-radius:12px;overflow:hidden}
+.tabla th,.tabla td{padding:14px 18px;text-align:left;border-bottom:1px solid var(--border-color);font-size:0.95rem}
+.tabla th{background:#f1f5f9;color:#0f172a;font-family:"Outfit",sans-serif;font-weight:700}
+
+.insignia{display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;background:var(--primary-light);color:var(--primary-dark);font-size:0.85rem;font-weight:700}
+.mensajes{margin-bottom:24px}
+.aviso{padding:14px 18px;border-radius:12px;margin-bottom:12px;border:1px solid transparent;font-size:0.95rem;font-weight:500}
+.aviso-success{background:#d1e7dd;border-color:#badbcc;color:#0f5132}
+.aviso-error{background:#f8d7da;border-color:#f5c2c7;color:#842029}
+.aviso-warning{background:#fff3cd;border-color:#ffecb5;color:#664d03}
+
+/* Footer Profesional con fondo sólido y excelente legibilidad */
+.pie-sistema{
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  padding: 48px 24px 24px;
+  font-size: 0.95rem;
+  margin-top: auto;
+  border-top: 2px solid #334155;
+}
+.pie-container{
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 36px;
+  margin-bottom: 36px;
+}
+.pie-col h4{
+  color: #ffffff !important;
+  font-family: "Outfit", sans-serif;
+  font-size: 1.15rem;
+  margin-bottom: 16px;
+  font-weight: 700;
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 6px;
+  display: inline-block;
+}
+.pie-col p, .pie-col ul{
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #e2e8f0 !important;
+  line-height: 1.7;
+}
+.pie-col ul li{margin-bottom: 8px}
+.pie-col a{
+  color: #38bdf8 !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+.pie-col a:hover{text-decoration: underline}
+.pie-bottom{
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 24px;
+  border-top: 1px solid #334155;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  color: #94a3b8 !important;
+  font-size: 0.9rem;
+}
+
+@media (max-width:992px){
   .cuerpo{grid-template-columns:1fr}
-  .menu{border-right:0;border-bottom:1px solid var(--borde);padding:10px}
-  .menu ul{display:flex;gap:6px;overflow-x:auto}
-  .menu a{white-space:nowrap}
-  .contenido{padding:20px 16px}
+  .menu{border-right:0;border-bottom:1px solid var(--border-color);padding:16px}
+  .menu ul{flex-direction:row;overflow-x:auto;padding-bottom:4px}
+  .menu a{white-space:nowrap;padding:10px 14px}
+  .contenido{padding:24px 16px}
   .usuario{display:none}
 }
-.pie-sistema{background:var(--hondo);color:#e3f3ee;padding:16px 24px;font-size:.9rem;display:flex;flex-wrap:wrap;gap:6px 28px;justify-content:space-between}
-.pie-sistema a{color:#bfe3da}
+
 @media print{.pie-sistema{display:none}}
-/* Bootstrap en verde clínico */
-:root{--bs-primary:#17574f;--bs-primary-rgb:23,87,79;--bs-link-color:#17574f;--bs-link-hover-color:#12453f}
-.btn-primary{--bs-btn-bg:#17574f;--bs-btn-border-color:#17574f;--bs-btn-hover-bg:#1c6a5f;--bs-btn-hover-border-color:#1c6a5f;--bs-btn-active-bg:#12453f;--bs-btn-active-border-color:#12453f}
-.alert{border-radius:12px}
-.alert-success{--bs-alert-color:#1d5a2c;--bs-alert-bg:#e3f5e8;--bs-alert-border-color:#9fd3ae}
-.alert-info{--bs-alert-color:#17574f;--bs-alert-bg:#e6f4f0;--bs-alert-border-color:#cfe5df}
 {% block extra_css %}{% endblock %}
 </style>
 </head>
@@ -90,7 +163,7 @@ a{color:var(--hondo)}
 <header class="cabecera">
   <div class="fila">
     <span class="logo" aria-hidden="true"><svg><use href="#diente"/></svg></span>
-    <span class="marca">Dental Simase</span>
+    <span class="marca">Clínica Dental SIMASE</span>
     <div class="usuario">
       {{ user.get_full_name|default:user.username }}
       <small>{{ user.get_rol_display }}</small>
@@ -102,37 +175,59 @@ a{color:var(--hondo)}
   </div>
 </header>
 
-<div class="cuerpo">
-  <nav class="menu" aria-label="Menú principal">
-    <ul>
-      {% for item in menu_items %}
-      <li><a href="{{ item.url }}"{% if item.activo %} aria-current="page"{% endif %}>{{ item.etiqueta }}</a></li>
-      {% endfor %}
-    </ul>
-  </nav>
+<div class="wrapper-principal">
+  <div class="cuerpo">
+    <nav class="menu" aria-label="Menú principal">
+      <ul>
+        {% for item in menu_items %}
+        <li><a href="{{ item.url }}"{% if item.activo %} aria-current="page"{% endif %}>{{ item.etiqueta }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
 
-  <main class="contenido">
-    {% if messages %}
-    <div class="mensajes">
-      {% for m in messages %}
-      <div class="alert alert-{{ m.tags|default:'info' }} alert-dismissible fade show" role="alert">
-        {{ m }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    <main class="contenido">
+      {% if messages %}
+      <div class="mensajes">
+        {% for m in messages %}
+        <div class="alert alert-{{ m.tags|default:'info' }} alert-dismissible fade show" role="alert">
+          {{ m }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        {% endfor %}
       </div>
-      {% endfor %}
-    </div>
-    {% endif %}
+      {% endif %}
 
-    {% block contenido %}{% endblock %}
-  </main>
+      {% block contenido %}{% endblock %}
+    </main>
+  </div>
 </div>
 
 <footer class="pie-sistema">
-  <span><strong>{{ clinica.nombre }}</strong></span>
-  <span>{{ clinica.direccion }}</span>
-  <span>Tel. <a href="tel:{{ clinica.telefono }}">{{ clinica.telefono }}</a></span>
-  <span><a href="mailto:{{ clinica.correo }}">{{ clinica.correo }}</a></span>
-  <span>{{ clinica.horario_semana }} · {{ clinica.horario_sabado }}</span>
+  <div class="pie-container">
+    <div class="pie-col">
+      <h4>Clínica Dental SIMASE</h4>
+      <p>Excelencia en salud oral, tecnología de vanguardia y un equipo de profesionales comprometidos con tu sonrisa y bienestar.</p>
+    </div>
+    <div class="pie-col">
+      <h4>Horarios de Atención</h4>
+      <ul>
+        <li>Lunes a Viernes: 08:30 - 19:00 hrs</li>
+        <li>Sábados: 09:00 - 14:00 hrs</li>
+      </ul>
+    </div>
+    <div class="pie-col">
+      <h4>Contacto Institucional</h4>
+      <ul>
+        <li>Av. Libertad 1234, Oficina 402, Rancagua</li>
+        <li>Teléfono: <a href="tel:+56912345678">+56 9 1234 5678</a></li>
+        <li>Email: <a href="mailto:contacto@SIMASE.cl">contacto@SIMASE.cl</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="pie-bottom">
+    <span>&copy; {% now "Y" %} Clínica Dental SIMASE. Todos los derechos reservados.</span>
+    <span>Sistema Integral de Gestión Odontológica</span>
+  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

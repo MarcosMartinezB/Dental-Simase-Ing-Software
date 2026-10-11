@@ -3,28 +3,43 @@
 {% block titulo %}Fichas clínicas{% endblock %}
 {% block contenido %}
 <h1>Fichas clínicas</h1>
-<form method="get" class="tarjeta" style="display:flex;gap:10px;align-items:end;flex-wrap:wrap">
-  <div class="campo" style="flex:1;min-width:220px">
+
+<form method="get" class="tarjeta" style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">
+  <div class="campo" style="flex:1;min-width:240px;margin-bottom:0">
     <label for="q">Buscar por RUT o nombre</label>
-    <input type="search" id="q" name="q" value="{{ q }}">
+    <input type="search" id="q" name="q" value="{{ q }}" placeholder="Ej. 12.345.678-9 o Juan Pérez">
   </div>
   <button class="boton" type="submit">Buscar</button>
 </form>
+
 {% if fichas %}
-<table class="tabla">
-  <thead><tr><th>RUT</th><th>Paciente</th><th>Ficha abierta</th><th></th></tr></thead>
-  <tbody>
-  {% for f in fichas %}
-  <tr>
-    <td>{{ f.paciente.rut }}</td>
-    <td>{{ f.paciente.usuario.get_full_name }}</td>
-    <td>{{ f.fecha_creacion|date:"d/m/Y" }}</td>
-    <td><a class="boton-sec" href="{% url 'ficha_detalle' f.pk %}">Abrir ficha</a></td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="tarjeta" style="padding:0;overflow:hidden">
+  <table class="tabla mb-0">
+    <thead>
+      <tr>
+        <th>RUT</th>
+        <th>Paciente</th>
+        <th>Ficha abierta</th>
+        <th style="text-align: right;">Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for f in fichas %}
+      <tr>
+        <td><strong>{{ f.paciente.rut }}</strong></td>
+        <td>{{ f.paciente.usuario.get_full_name }}</td>
+        <td>{{ f.fecha_creacion|date:"d/m/Y" }}</td>
+        <td style="text-align: right;">
+          <a class="boton-sec" href="{% url 'ficha_detalle' f.pk %}" style="padding: 8px 16px; font-size: 0.875rem;">Abrir ficha</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% else %}
-<div class="tarjeta">No se encontraron fichas.</div>
+<div class="tarjeta">
+  <p style="margin: 0; color: var(--text-muted);">No se encontraron fichas clínicas registradas con los criterios de búsqueda.</p>
+</div>
 {% endif %}
 {% endblock %}

@@ -4,77 +4,95 @@
 {% extends 'base.html' %}
 {% block titulo %}Registrar atención{% endblock %}
 {% block extra_css %}
-.fila-form{display:grid;grid-template-columns:2fr 1fr auto;gap:12px;align-items:center;margin-bottom:10px}
-.costo-fila{font-weight:700;color:var(--hondo)}
-.total{font-size:1.2rem;font-weight:700;margin-top:10px}
+.fila-form{display:grid;grid-template-columns:2fr 1fr auto;gap:16px;align-items:center;margin-bottom:12px;background:#f8fafc;padding:12px;border:1px solid var(--border-color);border-radius:10px}
+.costo-fila{font-weight:700;color:var(--primary-color);font-size:1.05rem}
+.total{font-size:1.3rem;font-weight:700;margin-top:16px;color:#0f172a}
 @media (max-width:860px){.fila-form{grid-template-columns:1fr}}
 {% endblock %}
 {% block contenido %}
 <h1>Registrar atención</h1>
-<div class="tarjeta">
-  <strong>{{ cita.paciente }}</strong> · {{ cita.fecha_hora|date:"d/m/Y H:i" }} · {{ cita.tipo_atencion.nombre }}
+
+<div class="tarjeta" style="background: #f8fafc; border-left: 5px solid var(--primary-color);">
+  <p style="margin: 0; font-size: 1.05rem;"><strong>{{ cita.paciente }}</strong> · {{ cita.fecha_hora|date:"d/m/Y H:i" }} · <strong>{{ cita.tipo_atencion.nombre }}</strong></p>
 </div>
 
 <form method="post">
   {% csrf_token %}
-  {% if form.non_field_errors %}<div class="aviso aviso-error" role="alert">{% for e in form.non_field_errors %}{{ e }} {% endfor %}</div>{% endif %}
+  {% if form.non_field_errors %}
+  <div class="aviso aviso-error" role="alert">{% for e in form.non_field_errors %}{{ e }} {% endfor %}</div>
+  {% endif %}
 
   <div class="tarjeta">
-    <h2>Diagnóstico</h2>
+    <h2 style="font-size: 1.25rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Diagnóstico</h2>
     {% include 'partials/_campo.html' with campo=form.diagnostico %}
   </div>
 
   <div class="tarjeta">
-    <h2>Atenciones realizadas</h2>
+    <h2 style="font-size: 1.25rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Atenciones realizadas</h2>
     {{ formset_tratamientos.management_form }}
     {% for e in formset_tratamientos.non_form_errors %}<span class="error-campo">{{ e }}</span>{% endfor %}
     <div id="filas-tratamientos">
       {% for f in formset_tratamientos %}
       <div class="fila-form">
-        <div class="campo">{{ f.tipo_atencion }}{% for e in f.tipo_atencion.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
+        <div class="campo mb-0">{{ f.tipo_atencion }}{% for e in f.tipo_atencion.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
         <div class="costo-fila"></div>
-        <button type="button" class="quitar boton-sec">Quitar</button>
+        <button type="button" class="quitar boton-sec" style="padding: 8px 14px; font-size: 0.85rem;">Quitar</button>
       </div>
       {% endfor %}
     </div>
     <template id="plantilla-tratamientos">
       <div class="fila-form">
-        <div class="campo">{{ formset_tratamientos.empty_form.tipo_atencion }}</div>
+        <div class="campo mb-0">{{ formset_tratamientos.empty_form.tipo_atencion }}</div>
         <div class="costo-fila"></div>
-        <button type="button" class="quitar boton-sec">Quitar</button>
+        <button type="button" class="quitar boton-sec" style="padding: 8px 14px; font-size: 0.85rem;">Quitar</button>
       </div>
     </template>
-    <button type="button" class="boton-mas" data-agregar="tratamientos" aria-label="Agregar otra atención">+</button>
-    <p class="total">Total: <span id="total">$0</span></p>
+    
+    <div style="display: flex; align-items: center; gap: 16px; margin-top: 16px;">
+      <button type="button" class="boton-mas" data-agregar="tratamientos" aria-label="Agregar otra atención">+</button>
+      <span style="font-weight: 600; color: var(--text-muted);">Añadir otra atención</span>
+    </div>
+    
+    <p class="total">Total: <span id="total" style="color: var(--primary-color);">$0</span></p>
   </div>
 
   <div class="tarjeta">
-    <h2>Insumos utilizados</h2>
-    <div class="campo" style="margin-bottom:14px">
-      <label><input type="checkbox" name="{{ form.sin_insumos.html_name }}" id="{{ form.sin_insumos.id_for_label }}"{% if form.sin_insumos.value %} checked{% endif %} style="width:auto"> No se utilizaron insumos</label>
+    <h2 style="font-size: 1.25rem; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">Insumos utilizados</h2>
+    
+    <div class="campo" style="margin-bottom: 20px; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color);">
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; margin: 0; font-weight: 600;">
+        <input type="checkbox" name="{{ form.sin_insumos.html_name }}" id="{{ form.sin_insumos.id_for_label }}"{% if form.sin_insumos.value %} checked{% endif %} style="width: 20px; height: 20px;"> No se utilizaron insumos en esta atención
+      </label>
     </div>
+
     {{ formset_insumos.management_form }}
     {% for e in formset_insumos.non_form_errors %}<span class="error-campo">{{ e }}</span>{% endfor %}
+    
     <div id="filas-insumos">
       {% for f in formset_insumos %}
-      <div class="fila-form">
-        <div class="campo">{{ f.insumo }}{% for e in f.insumo.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
-        <div class="campo">{{ f.cantidad }}{% for e in f.cantidad.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
-        <button type="button" class="quitar boton-sec">Quitar</button>
+      <div class="fila-form" style="grid-template-columns: 2fr 1fr auto;">
+        <div class="campo mb-0">{{ f.insumo }}{% for e in f.insumo.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
+        <div class="campo mb-0">{{ f.cantidad }}{% for e in f.cantidad.errors %}<span class="error-campo">{{ e }}</span>{% endfor %}</div>
+        <button type="button" class="quitar boton-sec" style="padding: 8px 14px; font-size: 0.85rem;">Quitar</button>
       </div>
       {% endfor %}
     </div>
+    
     <template id="plantilla-insumos">
-      <div class="fila-form">
-        <div class="campo">{{ formset_insumos.empty_form.insumo }}</div>
-        <div class="campo">{{ formset_insumos.empty_form.cantidad }}</div>
-        <button type="button" class="quitar boton-sec">Quitar</button>
+      <div class="fila-form" style="grid-template-columns: 2fr 1fr auto;">
+        <div class="campo mb-0">{{ formset_insumos.empty_form.insumo }}</div>
+        <div class="campo mb-0">{{ formset_insumos.empty_form.cantidad }}</div>
+        <button type="button" class="quitar boton-sec" style="padding: 8px 14px; font-size: 0.85rem;">Quitar</button>
       </div>
     </template>
-    <button type="button" class="boton-mas" data-agregar="insumos" aria-label="Agregar otro insumo">+</button>
+
+    <div style="display: flex; align-items: center; gap: 16px; margin-top: 16px;">
+      <button type="button" class="boton-mas" data-agregar="insumos" aria-label="Agregar otro insumo">+</button>
+      <span style="font-weight: 600; color: var(--text-muted);">Añadir otro insumo</span>
+    </div>
   </div>
 
-  <p style="display:flex;gap:10px">
+  <p style="display:flex;gap:12px;margin-top:24px;">
     <button class="boton" type="submit">Guardar atención</button>
     <a class="boton-sec" href="{% url 'panel' %}">Cancelar</a>
   </p>
@@ -89,25 +107,36 @@
   function recalcular() {
     var total = 0;
     document.querySelectorAll('#filas-tratamientos .fila-form').forEach(function (f) {
-      var p = precios[f.querySelector('select').value];
-      f.querySelector('.costo-fila').textContent = p ? fmt(p) : '';
+      var sel = f.querySelector('select');
+      var p = sel ? precios[sel.value] : null;
+      var costoEl = f.querySelector('.costo-fila');
+      if (costoEl) costoEl.textContent = p ? fmt(p) : '';
       total += p ? Number(p) : 0;
     });
-    document.getElementById('total').textContent = fmt(total);
+    var totalEl = document.getElementById('total');
+    if (totalEl) totalEl.textContent = fmt(total);
   }
   document.querySelectorAll('[data-agregar]').forEach(function (b) {
     b.addEventListener('click', function () {
       var n = b.dataset.agregar;
       var tpl = document.getElementById('plantilla-' + n);
       var total = document.getElementById('id_' + n + '-TOTAL_FORMS');
-      document.getElementById('filas-' + n).insertAdjacentHTML(
-        'beforeend', tpl.innerHTML.replace(/__prefix__/g, total.value));
-      total.value = parseInt(total.value, 10) + 1;
-      recalcular();
+      if (tpl && total) {
+        document.getElementById('filas-' + n).insertAdjacentHTML(
+          'beforeend', tpl.innerHTML.replace(/__prefix__/g, total.value));
+        total.value = parseInt(total.value, 10) + 1;
+        recalcular();
+      }
     });
   });
   document.addEventListener('click', function (e) {
-    if (e.target.matches('.quitar')) { e.target.closest('.fila-form').remove(); recalcular(); }
+    if (e.target.matches('.quitar')) { 
+      var fila = e.target.closest('.fila-form');
+      if (fila) {
+        fila.remove(); 
+        recalcular(); 
+      }
+    }
   });
   document.addEventListener('change', recalcular);
   recalcular();

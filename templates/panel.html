@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
-{% block titulo %}Inicio{% endblock %}
+{% block titulo %}Panel Principal{% endblock %}
 
 {% block contenido %}
-<h1>Hola, {{ user.get_full_name|default:user.username }}</h1>
+<h1>Bienvenido, {{ user.get_full_name|default:user.username }}</h1>
 <div class="tarjeta">
-  <p>Tu rol es <span class="insignia">{{ user.get_rol_display }}</span>.</p>
-  <p>Usa el menú de la izquierda para ver las opciones de tu rol. Las pantallas se irán sumando a medida que se construyan.</p>
+  <p style="font-size: 1.1rem; margin-bottom: 14px; color: var(--text-main);">Tu rol activo en el sistema es <span class="insignia">{{ user.get_rol_display }}</span>.</p>
+  <p style="color: var(--text-muted); font-size: 1.02rem; margin: 0; line-height: 1.6;">Utiliza el menú de navegación lateral izquierdo para acceder de forma rápida y ordenada a las opciones y módulos correspondientes a tu perfil dentro de Clínica Dental SIMASE.</p>
 </div>
 {% endblock %}

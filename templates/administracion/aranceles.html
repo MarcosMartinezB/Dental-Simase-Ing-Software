@@ -3,21 +3,45 @@
 {% block titulo %}Aranceles{% endblock %}
 {% block contenido %}
 <h1>Aranceles de atenciones</h1>
-<p><a class="boton" href="{% url 'crear_arancel' %}">Nueva atención</a></p>
-<table class="tabla">
-  <thead><tr><th>Atención</th><th>Valor</th><th>Duración</th><th>Estado</th><th></th></tr></thead>
-  <tbody>
-  {% for t in tipos %}
-  <tr>
-    <td>{{ t.nombre }}</td>
-    <td>${{ t.costo|floatformat:"0g" }}</td>
-    <td>{{ t.duracion_minutos }} min</td>
-    <td>{% if t.activo %}<span class="insignia">Vigente</span>{% else %}<span class="insignia" style="background:#fdeceb;color:#7a1f17">Inactiva</span>{% endif %}</td>
-    <td><a class="boton-sec" href="{% url 'editar_arancel' t.pk %}">Editar</a></td>
-  </tr>
-  {% empty %}
-  <tr><td colspan="5">Aún no hay atenciones configuradas.</td></tr>
-  {% endfor %}
-  </tbody>
-</table>
+
+<div style="margin-bottom: 20px;">
+  <a class="boton" href="{% url 'crear_arancel' %}">Nueva atención</a>
+</div>
+
+<div class="tarjeta" style="padding: 0; overflow: hidden;">
+  <table class="tabla mb-0">
+    <thead>
+      <tr>
+        <th>Atención</th>
+        <th>Valor</th>
+        <th>Duración</th>
+        <th>Estado</th>
+        <th style="text-align: right;">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for t in tipos %}
+      <tr>
+        <td><strong>{{ t.nombre }}</strong></td>
+        <td><strong>${{ t.costo|floatformat:"0g" }}</strong></td>
+        <td>{{ t.duracion_minutos }} min</td>
+        <td>
+          {% if t.activo %}
+          <span class="insignia" style="background: #d1e7dd; color: #0f5132;">Vigente</span>
+          {% else %}
+          <span class="insignia" style="background: #f8d7da; color: #842029;">Inactiva</span>
+          {% endif %}
+        </td>
+        <td style="text-align: right;">
+          <a class="boton-sec" href="{% url 'editar_arancel' t.pk %}" style="padding: 6px 14px; font-size: 0.85rem;">Editar</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="5" style="text-align: center; padding: 24px; color: var(--text-muted);">Aún no hay atenciones configuradas en el sistema.</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

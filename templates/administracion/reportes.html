@@ -3,28 +3,51 @@
 {% block titulo %}Reportes{% endblock %}
 {% block contenido %}
 <h1>Reporte de gestión</h1>
+
 <form method="get" class="tarjeta">
-  <div class="grid-form">
-    <div class="campo"><label for="desde">Desde</label><input type="date" id="desde" name="desde" value="{{ desde }}"></div>
-    <div class="campo"><label for="hasta">Hasta</label><input type="date" id="hasta" name="hasta" value="{{ hasta }}"></div>
+  <div class="grid-form" style="margin-bottom: 16px;">
+    <div class="campo mb-0">
+      <label for="desde">Desde</label>
+      <input type="date" id="desde" name="desde" value="{{ desde }}">
+    </div>
+    <div class="campo mb-0">
+      <label for="hasta">Hasta</label>
+      <input type="date" id="hasta" name="hasta" value="{{ hasta }}">
+    </div>
   </div>
-  <button class="boton" type="submit" style="margin-top:16px">Filtrar</button>
+  <button class="boton" type="submit">Filtrar reporte</button>
 </form>
 
-<table class="tabla">
-  <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
-  <tbody>
-  {% for etiqueta, valor in resumen %}<tr><td>{{ etiqueta }}</td><td>{{ valor }}</td></tr>
-  {% empty %}<tr><td colspan="2">No hay datos en el rango seleccionado.</td></tr>{% endfor %}
-  </tbody>
-</table>
+<div class="tarjeta" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+  <table class="tabla mb-0">
+    <thead>
+      <tr>
+        <th>Indicador</th>
+        <th style="text-align: right;">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for etiqueta, valor in resumen %}
+      <tr>
+        <td>{{ etiqueta }}</td>
+        <td style="text-align: right;"><strong>{{ valor }}</strong></td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="2" style="text-align: center; padding: 24px; color: var(--text-muted);">No hay datos registrados en el rango de fechas seleccionado.</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 
-<p style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
   <a class="boton-sec" href="{% url 'reporte_pdf' %}?desde={{ desde }}&hasta={{ hasta }}">Descargar PDF</a>
-  <form method="post" action="{% url 'reporte_correo' %}">
+  <form method="post" action="{% url 'reporte_correo' %}" style="margin: 0; display: inline;">
     {% csrf_token %}
-    <input type="hidden" name="desde" value="{{ desde }}"><input type="hidden" name="hasta" value="{{ hasta }}">
+    <input type="hidden" name="desde" value="{{ desde }}">
+    <input type="hidden" name="hasta" value="{{ hasta }}">
     <button class="boton-sec" type="submit">Enviar por correo</button>
   </form>
-</p>
+</div>
 {% endblock %}
